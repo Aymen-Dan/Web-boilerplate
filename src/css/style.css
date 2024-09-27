@@ -128,9 +128,13 @@ header div, footer div {
 
 .searched-teacher-list {
   display: grid;
-  justify-content: center;
+  justify-content: right;
   grid-template-columns: repeat(5, 1fr); /* 5 equal columns */
   margin: 30px 0 0 0;
+}
+
+.searched-teacher-list .show {
+  visibility: visible;
 }
 
 .teacher-item {
@@ -140,6 +144,12 @@ header div, footer div {
 .teacher-item p {
   margin: 2px;
   padding: 3%;
+}
+
+.image-box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .teacher-image {
@@ -233,7 +243,7 @@ tbody tr th:first-child, tbody tr td:first-child {
 
 .statistics-table-head {
   border-bottom: 1px solid black;
-  font-size: 12pt;
+  font-size: 14pt;
 }
 
 .table-navigation {
@@ -241,8 +251,15 @@ tbody tr th:first-child, tbody tr td:first-child {
   font-weight: lighter;
   padding-top: 20px;
 }
-.table-navigation .hidden {
-  display: none;
+.table-navigation button {
+  color: rgb(80, 175, 200);
+  border: none;
+  background: none;
+  padding: 0;
+  margin: 0 10px 0 10px;
+}
+.table-navigation button:hover {
+  color: rgb(50, 100, 110);
 }
 
 .sort-arrow {
@@ -252,14 +269,14 @@ tbody tr th:first-child, tbody tr td:first-child {
   margin: auto;
 }
 
-.button-navigation, .sort-arrow {
+.sort-arrow {
   color: rgb(80, 175, 200);
   border: none;
   background: none;
   padding: 0;
   margin: 0 10px 0 10px;
 }
-.button-navigation:hover, .sort-arrow:hover {
+.sort-arrow:hover {
   color: rgb(50, 100, 110);
 }
 

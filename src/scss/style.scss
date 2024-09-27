@@ -94,8 +94,9 @@ header div, footer div {
 
 header div, footer div {
 margin: 0 $block_padding_hor 0 $block_padding_hor;
-padding: $block_padding_ver 0 $block_padding_ver/2 0;
+padding: $block_padding_ver 0 calc($block_padding_ver / 2) 0;
 }
+
 
 .content-block {
   padding: $block_padding_ver $block_padding_hor calc($block_padding_ver/2) $block_padding_hor;
@@ -121,7 +122,7 @@ width: $section_header_width;
   //make constant value for margin for section header?
   margin: auto;
   border-top: 1px solid $color_third;
-  padding: $section_header_padding_ver / 2  0 $section_header_padding_ver / 2 0;
+  padding: calc($section_header_padding_ver / 2)  0 calc($section_header_padding_ver / 2) 0;
 }
 
 
@@ -236,17 +237,21 @@ font-weight: bold;
     }
   }
   select {
-      padding: calc($filters_padding/2);
-      margin: $filters_margin/10;
+      padding: calc($filters_padding / 2);
+      margin: calc($filters_margin / 10);
     }
 }
 
 .searched-teacher-list {
 //border: 1px solid #000;
   display: grid;
-  justify-content: center;
+  justify-content: right;
   grid-template-columns: repeat(5, 1fr); /* 5 equal columns */
   margin: calc($filters_margin - 10px) 0 0 0;
+}
+
+.searched-teacher-list .show {
+  visibility: visible;
 }
 
 .teacher-item {
@@ -259,11 +264,12 @@ font-weight: bold;
       //border: 1px solid #000;
     }
 }
+.image-box {
+display: flex;
+  align-items: center;
+  justify-content: center;
+}
 
-// .teacher-image-container {
-// position: relative;
-//    display: inline-block;
-// }
 
 
 .teacher-image {
@@ -379,26 +385,38 @@ thead {
 
 .statistics-table-head {
   border-bottom: 1px solid $color_third;
-  font-size: calc($default_font_size + 2pt);
+  font-size: calc($default_font_size + 4pt);
 }
 
 .table-navigation {
+//border: 1px solid #000;
   text-align: left;
   font-weight: lighter;
   padding-top: $filters_padding*2;
-  .hidden {
-    display: none;
+  button {
+  color: $table_controls_color;
+    border: none;
+    background: none;
+    padding: 0;
+    margin: 0 $filters_padding 0 $filters_padding;
+    &:hover {
+      color: $table_controls_on_hover_color;
+    }
   }
 }
+
+
 .sort-arrow {
   display: none;
   position: absolute;
   font-size: $large_font_size;
   margin: auto;
+//   position: relative; /* or absolute */
+//     top: -0.5px;
 }
 
-.button-navigation, .sort-arrow {
-  color: $table_controls_color;
+.sort-arrow {
+color: $table_controls_color;
   border: none;
   background: none;
   padding: 0;
@@ -481,3 +499,11 @@ text-align: left;
 margin-top: 1%;
 font-size: $default_font_size;
 }
+
+
+
+
+
+//////////////
+
+
