@@ -1,17 +1,26 @@
-const testModules = require('./test-module');
+
+const testModules = require('./test-module.js');
 require('../css/app.css');
+//const sass = require('sass');
 
 const userFile = require('./random-user-mock.js');
 //formattedUserFile = require('./formatted-user-mock.js');
 
 
-user_array = [];
+//user_array = [];
 processed_user_array = [];
+
+top_teachers_array = [];
+statistics_array = [];
+favorites_array = [];
+
+result_arr = [];
+
 
 //TASK1: Reformat data from random-user-mock.js into needed format
 function format_data(random, additional) {
 //console.log(rawData.name);
-
+user_array = [];
 //random formatting
 random.forEach(user => {
  formattedUser = {};
@@ -83,11 +92,11 @@ formattedUser.note = create_note(user.note);
 });
 
 //process users so no duplicates are kept
-processed_user_array = check_for_duplicates(user_array);
-
+processed_user_array.push(...check_for_duplicates(user_array));
 //return the final array
 return processed_user_array;
 }
+
 
 function define(data) {
 return typeof data === "undefined" ? null : data;
@@ -138,9 +147,10 @@ favorite = Math.random()>=0.5;
 return favorite;
 }
 
-let courses = ["Mathematics", "Physics", "English", "Computer Science", "Dancing", "Chess", "Biology", "Chemistry",
-               "Law", "Art", "Medicine", "Statistics"];
+
 function create_course(data){
+let courses = ["Mathematics", "Physics", "English", "Computer Science", "Dancing", "Chess", "Biology", "Chemistry",
+                                            "Law", "Art", "Medicine", "Statistics"];
 course = define(data);//check if field exists
 if(course === null) {
 course = courses[(Math.floor(Math.random() * courses.length))];
@@ -180,17 +190,15 @@ return filtered_array;
 }
 
 
-//validation check
-//processed_user_array.forEach((user => {console.log('All users are valid: ' + validate_user(processed_user_array))});
-
 
 //TASK2: Validate object
-function validate_users(user_array) {
-
-for (i = 0; i < user_array.length; i++) {
-user = user_array[i];
+function validate_users(us_array) {
+//console.log(us_array.length);
+for (i = 0; i < us_array.length; i++) {
+user = us_array[i];
 //string fields
-console.log('User ' + i + ' name is valid: ' + validate_string_field(user.full_name, i) +
+//console.log("HI!");
+validation = 'User ' + i + ' name is valid: ' + validate_string_field(user.full_name, i) +
 ';\nGender is valid: ' + validate_string_field(user.gender, i) +
 ';\nNote is valid: ' + validate_string_field(user.note, i) +
 ';\nState is valid: ' + validate_string_field(user.state, i) +
@@ -198,7 +206,8 @@ console.log('User ' + i + ' name is valid: ' + validate_string_field(user.full_n
 ';\nCountry is valid: ' + validate_string_field(user.country, i) +
 ';\nAge is valid: ' + isNumber(user.age) +
 ';\nPhone is valid: ' + isValidPhoneNumber(user.phone) + //phone number WHAT DO YOU MEAN BY COUNTRY. AM I SUPPOSED TO WRITE A MAP???
-';\nEmail is valid: ' + isValidEmail(user.email));
+';\nEmail is valid: ' + isValidEmail(user.email);
+//console.log("HI!");
 }
 }
 
@@ -257,20 +266,42 @@ function isValidEmail(email) {
 }
 
 //TASK 3: Filter objects by 4 parameters (&&)
-function parameter_filter(user_array, country, age, gender, favorite) {
+function parameter_filter(user_array, country, min_age, max_age, gender, favorite, withPhoto) {
+filtered_users = [];
+if(favorite && withPhoto) {
+console.log("fav is true; photo is true");
+   filtered_users = user_array.filter(user => user.country === country
+      && (user.age >= min_age && user.age <= max_age)
+      && user.gender === gender
+      && user.favorite
+      && user.picture_thumbnail !== "");
+} else if (favorite && !withPhoto) {
+console.log("fav is true; photo is false");
+      filtered_users = user_array.filter(user => user.country === country
+      && (user.age >= min_age && user.age <= max_age)
+      && user.gender === gender
+      && user.favorite);
+} else if (!favorite && withPhoto) {
+console.log("fav is false; photo is true" );
+      filtered_users = user_array.filter(user => user.country === country
+      && (user.age >= min_age && user.age <= max_age)
+      && user.gender === gender
+      && user.picture_thumbnail !== "");
+} else {
+console.log("fav is false; withPhoto is false");
+      filtered_users = user_array.filter(user => user.country === country
+      && (user.age >= min_age && user.age <= max_age)
+      && user.gender === gender);
 
-const filtered_users = user_array.filter(user => user.country === country
-&& user.age === age
-&& user.gender === gender
-&& user.favorite === favorite);
-
-console.log(filtered_users);
-
+}
+//console.log(filtered_users);
 return filtered_users;
 }
 
+
+
 //TASK 4: Sort objects by 4 parameters (||)
-function parameter_sort(user_array, sort_by_full_name, sort_by_age, sort_by_b_date, sort_by_country, ascending) {
+function parameter_sort(user_array, sort_by_full_name, sort_by_age, sort_by_b_date, sort_by_country, sort_by_spec, ascending) {
 user_array.sort((a, b) => {
 
 if (sort_by_full_name) {
@@ -293,6 +324,11 @@ if (a.country < b.country) return ascending ? -1 : 1;
 if (a.country > b.country) return ascending ? 1 : -1;
 }
 
+if(sort_by_spec) {
+if (a.course < b.course) return ascending ? -1 : 1;
+if (a.course > b.course) return ascending ? 1 : -1;
+}
+
 //IF both identical return 0
 return 0;
 });
@@ -303,10 +339,21 @@ return user_array;
 
 //TASK 5: find object by parameter
 function find_user(user_array, field){
+if(field === "") {
+return user_array;
+}
 
-const filtered_users = user_array.filter(user => user.name === field
+//console.log("Inside find_user field = " + field);
+//console.log(user_array);
+const filtered_users = user_array.filter(user =>
+user.full_name === field
 || user.note === field
-|| user.age === field);
+|| user.age == field
+|| user.id === field);
+
+//console.log("filtered_users");
+//console.log(filtered_users);
+
 if(filtered_users.length == 0) {
 console.log('No users found');
 return null;
@@ -325,12 +372,522 @@ return percentage;
 }
 
 
-//call functions
-console.log(/*JSON.stringify(*/format_data(userFile.randomUserMock, userFile.additionalUsers)/*)*/);
-validate_users(processed_user_array);
-parameter_filter(processed_user_array, 'Switzerland', 39, 'female', false);//since favorite is randomly generated it can appear or not appear
-console.log(/*JSON.stringify(*/parameter_sort(processed_user_array, false, true, false, true, true)/*)*/);//name age b_date country ascending(t/f)
-console.log(/*JSON.stringify(*/find_user(processed_user_array, 'User is shy~')/*)*/);//name note age
-console.log(calculate_statistics(processed_user_array, 'old lady with a cats') + "%");//get percentage from total
+//call functions LAB 2
+//console.log(format_data(userFile.randomUserMock, userFile.additionalUsers)); //userFile.additionalUsers,
+//validate_users(processed_user_array);
+//parameter_filter(processed_user_array, 'Switzerland', 39, 'female', false);//since favorite is randomly generated it can appear or not appear
+//console.log(parameter_sort(processed_user_array, false, true, false, true, true));//name age b_date country ascending(t/f)
+//console.log(find_user(processed_user_array, 'old lady with a cats'));//name note age
+//console.log(calculate_statistics(processed_user_array,  55) + "%");//get percentage from total
+
+import testModules from './test-module.js';
+/** ******** Your code here! *********** */
+
 
 console.log(testModules.hello);
+
+
+
+//LAB3
+
+//const result = sass.compile("style.scss");
+//console.log(result.css);
+
+//transfer data to html TOP TEACHERS
+
+//console.log("hELLO");
+//const dataElement = document.querySelector('.searched-teacher-list');
+//processed_user_array.map(user => {
+//dataElement.insertAdjacentHTML('afterbegin', `
+//
+//        <div class="teacher-item" id=${user.id} onclick="openTeacherInfo(this.id)">
+//            <div class="image-box">
+//                <img class="teacher-image" src=${user.picture_thumbnail}>
+//                <span class="teacher-initials">I.T</span>
+//            </div>
+//            <div class="teacher-item-info">
+//                <p class="teacher-name">${user.full_name}</p>
+//                <p class="teacher-spec">${user.course}</p>
+//                <p class="teacher-region">${user.country}</p>
+//            </div>
+//        </div>
+//`)
+//})
+
+//top_teachers_array
+function cleanUpTeachers(){
+ //("in cleanUpTeachers()");
+    document.getElementById("top_teachers_list").innerHTML = "";
+}
+
+//clean stats table
+function clearTable(){
+    document.getElementById("table_body_id").innerHTML = "";
+}
+
+//used in searchForTeacher()
+function loadUpTeachers(arr) {
+if(arr === null) {
+return;
+}
+ //console.log("in loadUpTeachers()");
+const dataElement = document.querySelector('.searched-teacher-list');
+arr.map(user => {
+dataElement.insertAdjacentHTML('afterbegin', `
+
+        <div class="teacher-item" id=${user.id} onclick="openTeacherInfo(this.id)">
+            <div class="image-box">
+                <img class="teacher-image" src=${user.picture_thumbnail}>
+                <span class="teacher-initials">I.T</span>
+            </div>
+            <div class="teacher-item-info">
+                <p class="teacher-name">${user.full_name}</p>
+                <p class="teacher-spec">${user.course}</p>
+                <p class="teacher-region">${user.country}</p>
+            </div>
+        </div>
+`)
+})
+
+}
+
+//this function should also write info into info popup (by id)
+function openTeacherInfo(teacher_id) {
+    //open the popup
+    let popup = document.getElementById("popup_id");
+    popup.style.visibility = "visible";
+//    let pop_img = document.getElementById("teacher_image_full");
+//    pop_img.style.visibility = "visible";
+    //call to fill with proper content
+    fillPopupContent(teacher_id);
+    }
+function openAddTeacherPopup(){
+let popup = document.getElementById("add_teacher_popup");
+    popup.style.visibility = "visible";
+}
+
+function fillPopupContent(teacher_id){
+//put data that's actually supposed to be there
+const popupInnards = processed_user_array.filter(user => user.id === teacher_id)[0];
+
+    const teacherInfoContainer = document.getElementById("teacher_info");
+    teacherInfoContainer.innerHTML = "";
+
+    let teacherInfoName = document.createElement("h1");
+    teacherInfoName.id = "teacher_name";
+     teacherInfoName.innerText = popupInnards.full_name;
+    teacherInfoContainer.appendChild(teacherInfoName);
+
+     let teacherInfoCourse = document.createElement("h3");
+        teacherInfoCourse.id = "teacher_speciality_full";
+         teacherInfoCourse.innerText = popupInnards.course;
+        teacherInfoContainer.appendChild(teacherInfoCourse);
+
+     let teacherInfoCountry = document.createElement("h4");
+             teacherInfoCountry.id = "teacher_region_full";
+              teacherInfoCountry.innerText = popupInnards.country;
+             teacherInfoContainer.appendChild(teacherInfoCountry);
+
+     let teacherInfoGender = document.createElement("h4");
+                  teacherInfoGender.id = "teacher_age_gender_full";
+                   teacherInfoGender.innerText = popupInnards.age + ", " + popupInnards.gender;
+                  teacherInfoContainer.appendChild(teacherInfoGender);
+
+    let teacherInfoEmail = document.createElement("address");
+                      teacherInfoEmail.id = "email_address";
+                       teacherInfoEmail.innerText = popupInnards.email;
+                      teacherInfoContainer.appendChild(teacherInfoEmail);
+
+    let teacherInfoPhone = document.createElement("h4");
+                      teacherInfoPhone.id = " teacher_phone_full";
+                       teacherInfoPhone.innerText = "+" + popupInnards.phone;
+                      teacherInfoContainer.appendChild(teacherInfoPhone);
+
+
+    const teacherInfoAbout = document.getElementById("teacher_desc_box");
+    teacherInfoAbout.innerHTML = "";
+        let teacherInfoDesc = document.createElement("p");
+            teacherInfoDesc.id = "teacher_description_full";
+             teacherInfoDesc.innerText = popupInnards.note;
+            teacherInfoAbout.appendChild(teacherInfoDesc);
+
+  const teacherInfoImageBox = document.getElementById("teacher_image");
+    teacherInfoImageBox.innerHTML = "";
+     let teacherInfoImg = document.createElement("img");
+                teacherInfoImg.id = "teacher_image_full"
+              // teacherInfoImg.class = "teacher-image-full";
+               console.log(popupInnards.picture_large);
+                 teacherInfoImg.src = popupInnards.picture_large;
+                // document.getElementById('teacher_image_full').src = popupInnards.picture_large;
+                 console.log(teacherInfoImg.src);
+                teacherInfoImageBox.appendChild(teacherInfoImg);
+
+//    alert(teacher_id);
+//    console.log(teacherInfoName);
+//   console.log(popupInnards);
+}
+
+function closeTeacherInfo() {
+            let popup = document.getElementById("popup_id");
+            popup.style.visibility = "hidden";
+        }
+
+function closeAddTeacherPopup() {
+let popup = document.getElementById("add_teacher_popup");
+            popup.style.visibility = "hidden";
+}
+
+is_fav = false;
+function toggleFavorite() {
+let favImg = document.getElementById("teacher_favorite_star");
+
+if(!is_fav) {
+     favImg.src =
+     "./images/star_filled.png"
+     is_fav = true;
+     favorites_array.push('fav!');//adding to favs
+     }
+    else {
+     favImg.src ="./images/star.png"
+     is_fav = false;
+     favorites_array.pop('fav!');//removing from favs
+     }
+
+     console.log('Favs: ' + favorites_array);
+}
+
+
+
+
+//stats table stuff
+    rowsPerPage = 10;
+    currentPage = 1;
+    ascendingOrderRequired = true;
+    //////SORTING STATISTICS
+    function sortStats(parameter) {
+    clearTable();
+    if (parameter === 'byname') {
+    populateTable(parameter_sort(processed_user_array, 1, 0, 0, 0, 0, ascendingOrderRequired), currentPage);
+    }
+    if (parameter === 'byage') {
+    populateTable(parameter_sort(processed_user_array, 0, 1, 0, 0, 0, ascendingOrderRequired), currentPage);
+    }
+    if (parameter === 'bycountry') {
+    populateTable(parameter_sort(processed_user_array, 0, 0, 0, 1, 0, ascendingOrderRequired), currentPage);
+    }
+    if (parameter === 'byspec') {
+    populateTable(parameter_sort(processed_user_array, 0, 0, 0, 0, 1, ascendingOrderRequired), currentPage);
+    }
+    ascendingOrderRequired = ascendingOrderRequired ? 0 : 1;
+    }
+
+
+function populateTable(array_of_users, page) {
+      let table = document.getElementById("table_body_id");
+
+      const startIndex = (page - 1) * rowsPerPage;
+      //console.log(startIndex);
+      const endIndex = startIndex + rowsPerPage;
+       //console.log(endIndex);
+      const slicedData = array_of_users.slice(startIndex, endIndex);
+      //console.log(slicedData);
+
+      table.innerHTML = "";
+  slicedData.forEach(user => {
+
+       let row = table.insertRow(-1);
+
+// Create table cells
+      let name = row.insertCell(0);
+      let speciality = row.insertCell(1);
+      let age = row.insertCell(2);
+      let gender = row.insertCell(3);
+      let nationality = row.insertCell(4);
+
+
+      // Add data to cells
+            name.innerText = user.full_name;
+            speciality.innerText = user.course;
+            age.innerText = user.age;
+            gender.innerText = user.gender;
+            nationality.innerText = user.country;
+});
+
+       updatePagination(array_of_users, page);
+}
+
+function updatePagination(array_of_users, currentPage) {
+            const pageCount = Math.ceil(array_of_users.length / rowsPerPage);
+            const paginationContainer = document.getElementById("stats_nav");
+            paginationContainer.innerHTML = "";
+
+            for (let i = 1; i <= pageCount; i++) {
+            const pageButton = document.createElement("button");
+            pageButton.type = "button";
+            pageButton.innerText = i;
+            pageButton.onclick = function () {
+                  populateTable(processed_user_array, i);
+             };
+             if (i === currentPage) {
+                  pageButton.style.fontWeight = "bold";
+             }
+             paginationContainer.appendChild(pageButton);
+             paginationContainer.appendChild(document.createTextNode(" "));
+
+            }
+        }
+
+//actually call the table population function
+//populateTable(processed_user_array, currentPage);
+
+
+//SEARCHBAR (used inside HTML)
+function searchForTeacher() {
+//console.log(processed_user_array);
+//getResponse.then(function(arr) {
+      const input = document.getElementById("search_field");
+      const search_parameter = input.value;
+      const found_users = find_user(processed_user_array, search_parameter);
+      console.log(found_users);
+      //actually show found teachers
+      //take array made by find_user(...) and put it into the function below
+     // console.log("in searchForTeacher()");
+     cleanUpTeachers();
+     loadUpTeachers(found_users);
+     console.log(calculate_statistics(found_users, search_parameter) + "%");
+//});
+}
+
+
+function filterByOptions() {
+regionControl = document.getElementById("region_control");
+optionRegion = regionControl.options[regionControl.selectedIndex].value;
+console.log(optionRegion);
+
+ageControl = document.getElementById("age_control");
+optionAge = ageControl.options[ageControl.selectedIndex].value;
+const ageMin = optionAge.slice(0, 2);
+console.log(ageMin);
+const ageMax = optionAge.slice(2, 4);
+console.log(ageMax);
+
+sexControl = document.getElementById("sex_control");
+optionSex = sexControl.options[sexControl.selectedIndex].value;
+console.log(optionSex);
+
+favoriteControl = document.getElementById("favorite_control");
+tickFav = favoriteControl.checked;
+console.log(tickFav);
+
+photoControl = document.getElementById("photo_control");
+tickPhoto = photoControl.checked;
+console.log("tickphoto:" + tickPhoto);
+
+console.log(parameter_filter(processed_user_array, optionRegion, ageMin, ageMax, optionSex, tickFav, tickPhoto));
+cleanUpTeachers();
+loadUpTeachers(parameter_filter(processed_user_array, optionRegion, ageMin, ageMax, optionSex, tickFav, tickPhoto));
+}
+
+function sexChange(sex) {
+    if(sex.id === 'add_teacher_male') {
+    document.getElementById('add_teacher_female').checked = false;
+    } else if (sex.id === 'add_teacher_female') {
+    document.getElementById('add_teacher_male').checked = false;
+    }
+}
+
+
+////add teacher popup button event
+function addNewTeacher() {
+
+newTeacherInputName = document.getElementById("add_teacher_name");
+newTeacherFullName = newTeacherInputName.value;
+console.log("name: " + newTeacherFullName);
+
+newTeacherInputSpecialty = document.getElementById("add_teacher_spec");
+newTeacherSpecialty = newTeacherInputSpecialty.options[newTeacherInputSpecialty.selectedIndex].innerText;
+console.log(newTeacherSpecialty);
+
+newTeacherInputCountry = document.getElementById("add_teacher_country");
+newTeacherCountry = newTeacherInputCountry.options[newTeacherInputCountry.selectedIndex].innerText;
+console.log(newTeacherCountry);
+
+newTeacherInputCity = document.getElementById("add_teacher_city");
+newTeacherCity = newTeacherInputCity.value;
+console.log("city: " + newTeacherCity);
+
+newTeacherInputEmail = document.getElementById("add_teacher_email");
+newTeacherEmail = newTeacherInputEmail.value;
+console.log("email: " + newTeacherEmail);
+
+newTeacherInputPhone = document.getElementById("add_teacher_phone");
+newTeacherPhone  = newTeacherInputPhone.value;
+console.log("phone: " + newTeacherPhone);
+
+newTeacherInputDoB = document.getElementById("add_teacher_birthday");
+newTeacherDoB  = new Date(newTeacherInputDoB.value);
+console.log("DoB: " + newTeacherDoB);
+
+newTeacherInputNote = document.getElementById("add_teacher_notes");
+newTeacherNote = newTeacherInputNote.value;
+console.log("note: " + newTeacherNote);
+
+newTeacherInputSex = document.getElementById("add_teacher_female");
+if(newTeacherInputSex.checked) {
+newTeacherSex = "female";
+newTeacherTitle = "Ms";
+console.log("sex: " + newTeacherSex);
+} else {
+newTeacherSex = "male";
+newTeacherTitle = "Mr";
+console.log("sex: " + newTeacherSex);
+}
+
+newTeacherInputColor = document.getElementById("add_teacher_color");
+newTeacherColor = newTeacherInputColor.value;
+console.log("color: " + newTeacherColor);
+
+user = {
+gender: newTeacherSex,
+title: newTeacherTitle,
+full_name: newTeacherFullName,
+b_day: newTeacherDoB,
+bg_color: newTeacherColor,
+city: newTeacherCity,
+country: newTeacherCountry,
+course: newTeacherSpecialty,
+email: newTeacherEmail,
+phone: newTeacherPhone,
+note: newTeacherNote,
+
+age: calculateAge(newTeacherDoB),
+favorite: false,
+
+picture_large: "",
+picture_thumbnail: "",
+}
+
+new_arr = [];
+console.log(user);
+new_arr.push(user);
+console.log(format_data([], new_arr));
+cleanUpTeachers();
+clearTable();
+
+const dataElement = document.querySelector('.searched-teacher-list');
+processed_user_array.map(user => {
+dataElement.insertAdjacentHTML('afterbegin', `
+
+        <div class="teacher-item" id=${user.id} onclick="openTeacherInfo(this.id)">
+            <div class="image-box">
+                <img class="teacher-image" src=${user.picture_thumbnail}>
+                <span class="teacher-initials">I.T</span>
+            </div>
+            <div class="teacher-item-info">
+                <p class="teacher-name">${user.full_name}</p>
+                <p class="teacher-spec">${user.course}</p>
+                <p class="teacher-region">${user.country}</p>
+            </div>
+        </div>
+`)
+})
+
+populateTable(processed_user_array, currentPage);
+
+}
+
+
+
+function calculateAge(birthday) { // birthday is a date
+    var ageDifMs = Date.now() - birthday.getTime();
+    var ageDate = new Date(ageDifMs); // miliseconds from epoch
+    return Math.abs(ageDate.getUTCFullYear() - 1970);
+}
+
+
+//LAB 4
+
+//TASK 1: get request: 50 users from https://randomuser.me/api
+async function getOurUsers(amount) {
+dummy_arr = [];
+do {
+ try {
+ const response = await fetch('https://randomuser.me/api');
+     if (!response.ok) {
+       throw new Error('Network response was not ok');
+     }
+     const data = await response.json();
+     //console.log(data);
+     dummy_arr.push(data.results[0]);
+ } catch (error) {
+          console.error(error);
+        }
+        } while (dummy_arr.length < amount);
+
+        return dummy_arr;
+}
+
+getResponse = getOurUsers(10);
+getResponse.then(function(arr) {
+acquired_users_array = format_data(arr, []);
+validate_users(acquired_users_array);
+
+console.log('length: ' + acquired_users_array.length);
+console.log(acquired_users_array);
+
+//put users into the page
+const dataElement = document.querySelector('.searched-teacher-list');
+acquired_users_array.map(user => {
+dataElement.insertAdjacentHTML('afterbegin', `
+
+        <div class="teacher-item" id=${user.id} onclick="openTeacherInfo(this.id)">
+            <div class="image-box">
+                <img class="teacher-image" src=${user.picture_thumbnail}>
+                <span class="teacher-initials">I.T</span>
+            </div>
+            <div class="teacher-item-info">
+                <p class="teacher-name">${user.full_name}</p>
+                <p class="teacher-spec">${user.course}</p>
+                <p class="teacher-region">${user.country}</p>
+            </div>
+        </div>
+`)
+})
+
+populateTable(acquired_users_array, currentPage);
+
+});
+
+
+function requestMoreTeachers() {
+extra_teachers_array = [];
+
+getOurUsers(10).then(function(arr) {
+format_data(arr, []);
+//console.log(processed_user_array);
+
+cleanUpTeachers();
+clearTable();
+
+const dataElement = document.querySelector('.searched-teacher-list');
+processed_user_array.map(user => {
+dataElement.insertAdjacentHTML('afterbegin', `
+
+        <div class="teacher-item" id=${user.id} onclick="openTeacherInfo(this.id)">
+            <div class="image-box">
+                <img class="teacher-image" src=${user.picture_thumbnail}>
+                <span class="teacher-initials">I.T</span>
+            </div>
+            <div class="teacher-item-info">
+                <p class="teacher-name">${user.full_name}</p>
+                <p class="teacher-spec">${user.course}</p>
+                <p class="teacher-region">${user.country}</p>
+            </div>
+        </div>
+`)
+})
+
+populateTable(processed_user_array, currentPage);
+
+});
+}
