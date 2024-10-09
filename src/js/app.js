@@ -1,4 +1,3 @@
-
 const testModules = require('./test-module.js');
 require('../css/app.css');
 //const sass = require('sass');
@@ -380,10 +379,6 @@ return percentage;
 //console.log(find_user(processed_user_array, 'old lady with a cats'));//name note age
 //console.log(calculate_statistics(processed_user_array,  55) + "%");//get percentage from total
 
-import testModules from './test-module.js';
-/** ******** Your code here! *********** */
-
-
 console.log(testModules.hello);
 
 
@@ -654,7 +649,7 @@ function searchForTeacher() {
      // console.log("in searchForTeacher()");
      cleanUpTeachers();
      loadUpTeachers(found_users);
-     console.log(calculate_statistics(found_users, search_parameter) + "%");
+     //console.log(calculate_statistics(found_users, search_parameter) + "%");
 //});
 }
 
@@ -683,9 +678,11 @@ photoControl = document.getElementById("photo_control");
 tickPhoto = photoControl.checked;
 console.log("tickphoto:" + tickPhoto);
 
-console.log(parameter_filter(processed_user_array, optionRegion, ageMin, ageMax, optionSex, tickFav, tickPhoto));
+//console.log(parameter_filter(processed_user_array, optionRegion, ageMin, ageMax, optionSex, tickFav, tickPhoto));
 cleanUpTeachers();
 loadUpTeachers(parameter_filter(processed_user_array, optionRegion, ageMin, ageMax, optionSex, tickFav, tickPhoto));
+
+console.log(calculate_statistics(user_array, field + "%"));
 }
 
 function sexChange(sex) {
@@ -827,7 +824,7 @@ do {
         return dummy_arr;
 }
 
-getResponse = getOurUsers(10);
+getResponse = getOurUsers(50);
 getResponse.then(function(arr) {
 acquired_users_array = format_data(arr, []);
 validate_users(acquired_users_array);
