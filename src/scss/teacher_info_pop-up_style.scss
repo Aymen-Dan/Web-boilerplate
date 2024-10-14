@@ -167,3 +167,21 @@ text-align: left;
 margin: calc($filters_margin / 2);
 text-align: left;
 }
+
+//map popup
+#map {
+//border: 1px solid #000;
+height: 50px;
+width: 50px;
+
+}
+
+#map_popup_wrapper {
+//border: 1px solid #000;
+//visibility: hidden;
+}
+
+
+.teacher_map {
+text-decoration: underline;
+}

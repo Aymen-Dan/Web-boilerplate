@@ -266,6 +266,21 @@ function isValidEmail(email) {
 
 //TASK 3: Filter objects by 4 parameters (&&)
 function parameter_filter(user_array, country, min_age, max_age, gender, favorite, withPhoto) {
+if(country === "any" && min_age === "any" && max_age === "any" && gender === "any") {
+    if(favorite && withPhoto) {
+filtered_users = user_array.filter(user => user.favorite && user.picture_thumbnail !== "");
+    } else if (!favorite && withPhoto) {
+filtered_users = user_array.filter(user => user.picture_thumbnail !== "");
+    } else if (favorite && !withPhoto) {
+filtered_users = user_array.filter(user => user.favorite);
+    } else {
+filtered_users = user_array;
+    }
+console.log(filtered_users);
+return filtered_users;
+}
+
+
 filtered_users = [];
 if(favorite && withPhoto) {
 console.log("fav is true; photo is true");
@@ -443,8 +458,10 @@ dataElement.insertAdjacentHTML('afterbegin', `
         </div>
 `)
 })
-
 }
+
+
+
 
 //this function should also write info into info popup (by id)
 function openTeacherInfo(teacher_id) {
@@ -455,7 +472,9 @@ function openTeacherInfo(teacher_id) {
 //    pop_img.style.visibility = "visible";
     //call to fill with proper content
     fillPopupContent(teacher_id);
-    }
+}
+
+
 function openAddTeacherPopup(){
 let popup = document.getElementById("add_teacher_popup");
     popup.style.visibility = "visible";
@@ -532,27 +551,33 @@ let popup = document.getElementById("add_teacher_popup");
             popup.style.visibility = "hidden";
 }
 
-is_fav = false;
-function toggleFavorite() {
+
+function toggleFavorite(fav_id) {
 let favImg = document.getElementById("teacher_favorite_star");
+let thisTeacher = processed_user_array.filter(user => user.id === fav_id);
+
+console.log(thisTeacher);
+
+is_fav = thisTeacher.favorite;
+
+//console.log(is_fav);
 
 if(!is_fav) {
      favImg.src =
      "./images/star_filled.png"
      is_fav = true;
-     favorites_array.push('fav!');//adding to favs
+     //favorites_array.push('fav!');//adding to favs
+      console.log("fav: " + is_fav);
      }
-    else {
+     else {
      favImg.src ="./images/star.png"
      is_fav = false;
-     favorites_array.pop('fav!');//removing from favs
+     //favorites_array.pop('fav!');//removing from favs
+     console.log("fav: " + is_fav);
      }
 
-     console.log('Favs: ' + favorites_array);
+
 }
-
-
-
 
 //stats table stuff
     rowsPerPage = 10;
@@ -661,10 +686,17 @@ console.log(optionRegion);
 
 ageControl = document.getElementById("age_control");
 optionAge = ageControl.options[ageControl.selectedIndex].value;
-const ageMin = optionAge.slice(0, 2);
+ageMin = optionAge.slice(0, 2);
 console.log(ageMin);
-const ageMax = optionAge.slice(2, 4);
+ageMax = optionAge.slice(2, 4);
 console.log(ageMax);
+
+if(optionAge === "any") {
+ageMin = "any";
+ageMax = "any";
+console.log(ageMin);
+console.log(ageMax);
+}
 
 sexControl = document.getElementById("sex_control");
 optionSex = sexControl.options[sexControl.selectedIndex].value;
@@ -682,7 +714,7 @@ console.log("tickphoto:" + tickPhoto);
 cleanUpTeachers();
 loadUpTeachers(parameter_filter(processed_user_array, optionRegion, ageMin, ageMax, optionSex, tickFav, tickPhoto));
 
-console.log(calculate_statistics(user_array, field + "%"));
+//console.log(calculate_statistics(user_array, field + "%"));
 }
 
 function sexChange(sex) {
@@ -793,8 +825,6 @@ populateTable(processed_user_array, currentPage);
 
 }
 
-
-
 function calculateAge(birthday) { // birthday is a date
     var ageDifMs = Date.now() - birthday.getTime();
     var ageDate = new Date(ageDifMs); // miliseconds from epoch
@@ -833,26 +863,63 @@ console.log('length: ' + acquired_users_array.length);
 console.log(acquired_users_array);
 
 //put users into the page
-const dataElement = document.querySelector('.searched-teacher-list');
-acquired_users_array.map(user => {
-dataElement.insertAdjacentHTML('afterbegin', `
+//const dataElement = document.querySelector('.searched-teacher-list');
+loadUpTeachers(acquired_users_array);
+//acquired_users_array.map(user => {
+//dataElement.insertAdjacentHTML('afterbegin', `
+//
+//        <div class="teacher-item" id=${user.id} onclick="openTeacherInfo(this.id)">
+//            <div class="image-box">
+//                <img class="teacher-image" src=${user.picture_thumbnail}>
+//                <span class="teacher-initials">I.T</span>
+//            </div>
+//            <div class="teacher-item-info">
+//                <p class="teacher-name">${user.full_name}</p>
+//                <p class="teacher-spec">${user.course}</p>
+//                <p class="teacher-region">${user.country}</p>
+//            </div>
+//        </div>
+//`)
+//})
 
-        <div class="teacher-item" id=${user.id} onclick="openTeacherInfo(this.id)">
-            <div class="image-box">
-                <img class="teacher-image" src=${user.picture_thumbnail}>
-                <span class="teacher-initials">I.T</span>
-            </div>
+populateTable(acquired_users_array, currentPage);
+createFavList(acquired_users_array);
+});
+
+
+//add a function that filters the existing teachers arr to only keep those that have favorite: true;
+function createFavList(arr){
+favorites_array = arr.filter(function(el) { return el.favorite === true; });
+console.log(favorites_array);
+loadUpFavs(favorites_array);
+}
+
+//fill up favs list
+function loadUpFavs(arr) {
+
+const dataElement = document.querySelector('.teacher-carousel');
+arr.map(user => {
+    dataElement.insertAdjacentHTML('afterbegin', `
+<div class="teacher-item" id=${user.id} onclick="openTeacherInfo(this.id)">
+            <img class="teacher-image" src=${user.picture_thumbnail}>
+            <span class="teacher-initials">I.T</span>
             <div class="teacher-item-info">
                 <p class="teacher-name">${user.full_name}</p>
-                <p class="teacher-spec">${user.course}</p>
                 <p class="teacher-region">${user.country}</p>
             </div>
         </div>
-`)
-})
+  `)
+  })
+}
 
-populateTable(acquired_users_array, currentPage);
-
+const list = document.getElementById('teacher_favs_list');
+const prev = document.getElementById('fav-left-btn');
+prev.addEventListener('click', () => {
+    list.scrollLeft -= (100)
+});
+const next = document.getElementById('fav-right-btn');
+next.addEventListener('click', () => {
+    list.scrollLeft += (100)
 });
 
 
@@ -885,6 +952,33 @@ dataElement.insertAdjacentHTML('afterbegin', `
 })
 
 populateTable(processed_user_array, currentPage);
-
+createFavList(processed_user_array);
 });
+}
+
+//LAB 5: libs
+
+//map stuff
+map = L.map('map').setView([51.505, -0.09], 13);
+L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19,
+    attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+}).addTo(map);
+
+mapIsOpen = false;
+function openMapPopup(this_teacher_id) {
+teacherToMap = processed_user_array.filter(user => user.id === this_teacher_id)[0];
+
+//map = L.map('map').setView([teacherToMap.coordinates.latitude, teacherToMap.coordinates.longitude], 13);
+
+
+//console.log("OK MAP WORKS!");
+let popup = document.getElementById("map_popup_wrapper");
+if(!mapIsOpen) {
+    popup.style.visibility = "visible";
+    mapIsOpen = true;
+    } else {
+    popup.style.visibility = "hidden";
+     mapIsOpen = false;
+    }
 }
