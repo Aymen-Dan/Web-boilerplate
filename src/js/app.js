@@ -266,50 +266,66 @@ function isValidEmail(email) {
 
 //TASK 3: Filter objects by 4 parameters (&&)
 function parameter_filter(user_array, country, min_age, max_age, gender, favorite, withPhoto) {
+filtered_users = [];
+final_filtered_users = [];
+//all are "Any"
 if(country === "any" && min_age === "any" && max_age === "any" && gender === "any") {
-    if(favorite && withPhoto) {
-filtered_users = user_array.filter(user => user.favorite && user.picture_thumbnail !== "");
-    } else if (!favorite && withPhoto) {
-filtered_users = user_array.filter(user => user.picture_thumbnail !== "");
-    } else if (favorite && !withPhoto) {
-filtered_users = user_array.filter(user => user.favorite);
-    } else {
 filtered_users = user_array;
-    }
-console.log(filtered_users);
-return filtered_users;
+}
+
+//in case SOME are "Any"
+//if AGE and GENDER are SPECIFIED
+if(country === "any" && min_age !== "any" && max_age !== "any" && gender !== "any") {
+filtered_users = user_array.filter(user => (user.age >= min_age && user.age <= max_age) && user.gender === gender);
+}
+//if COUNTRY and GENDER are specified
+if(country !== "any" && min_age === "any" && max_age === "any" && gender !== "any") {
+filtered_users = user_array.filter(user => user.country === country && user.gender === gender);
+}
+//if COUNTRY and AGE are SPECIFIED
+if(country !== "any" && min_age !== "any" && max_age !== "any" && gender === "any") {
+filtered_users = user_array.filter(user => user.country === country && (user.age >= min_age && user.age <= max_age));
+}
+
+//if AGE ONLY SPECIFIED
+if(country === "any" && min_age !== "any" && max_age !== "any" && gender === "any") {
+filtered_users = user_array.filter(user => (user.age >= min_age && user.age <= max_age));
+}
+//if COUNTRY ONLY SPECIFIED
+if(country !== "any" && min_age === "any" && max_age === "any" && gender === "any") {
+filtered_users = user_array.filter(user => user.country === country);
+}
+//if GENDER ONLY SPECIFIED
+if(country === "any" && min_age === "any" && max_age === "any" && gender !== "any") {
+filtered_users = user_array.filter(user => user.gender === gender);
 }
 
 
-filtered_users = [];
-if(favorite && withPhoto) {
-console.log("fav is true; photo is true");
-   filtered_users = user_array.filter(user => user.country === country
-      && (user.age >= min_age && user.age <= max_age)
-      && user.gender === gender
-      && user.favorite
-      && user.picture_thumbnail !== "");
-} else if (favorite && !withPhoto) {
-console.log("fav is true; photo is false");
-      filtered_users = user_array.filter(user => user.country === country
-      && (user.age >= min_age && user.age <= max_age)
-      && user.gender === gender
-      && user.favorite);
-} else if (!favorite && withPhoto) {
-console.log("fav is false; photo is true" );
-      filtered_users = user_array.filter(user => user.country === country
-      && (user.age >= min_age && user.age <= max_age)
-      && user.gender === gender
-      && user.picture_thumbnail !== "");
-} else {
-console.log("fav is false; withPhoto is false");
-      filtered_users = user_array.filter(user => user.country === country
+//get the filtered users list by proper options (NONE are ANY)
+if(country !== "any" && min_age !== "any" && max_age !== "any" && gender !== "any") {
+filtered_users = user_array.filter(user => user.country === country
       && (user.age >= min_age && user.age <= max_age)
       && user.gender === gender);
+      }
 
-}
+//ticks filtering
+	  if(favorite && withPhoto) {
+	  console.log("fav is true; photo is true");
+	  final_filtered_users = filtered_users.filter(user => user.favorite && user.picture_thumbnail !== "");
+	  } else if (favorite && !withPhoto) {
+	  console.log("fav is true; photo is false");
+	  final_filtered_users = filtered_users.filter(user => user.favorite);
+	  } else if (!favorite && withPhoto) {
+	  console.log("fav is false; photo is true");
+	  final_filtered_users = filtered_users.filter(user => user.picture_thumbnail !== "");
+	  } else {//so, not ONLY fas && NOT ONLY with pic
+	  console.log("fav is false; photo is false");
+	  final_filtered_users = filtered_users;
+	  }
+
+
 //console.log(filtered_users);
-return filtered_users;
+return final_filtered_users;
 }
 
 
