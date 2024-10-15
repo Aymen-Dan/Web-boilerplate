@@ -554,10 +554,6 @@ const popupInnards = processed_user_array.filter(user => user.id === teacher_id)
                  console.log(teacherInfoImg.src);
                 teacherInfoImageBox.appendChild(teacherInfoImg);
 
-
-   //let's create the map popup
-   //<p id="teacher_map_text" onclick="openMapPopup(this.id)">Toggle map</p>
-//<div class="map_div" id="map"></div>
     const teacherMapBox = document.getElementById("map_wrapper");
     teacherMapBox.innerHTML = "";
 
@@ -569,21 +565,21 @@ const popupInnards = processed_user_array.filter(user => user.id === teacher_id)
 
          teacherMapBox.appendChild(teacherMapToggler);//append the toggler
 
-        teacherActualMap = document.createElement("div");
-            teacherActualMap.id = 'map';
-            teacherActualMap.style = "height: 100px; width: 500px;";
-        teacherMapBox.appendChild(teacherActualMap);//append the map
-
+//        teacherActualMap = document.createElement("div");
+//            teacherActualMap.id = 'map';
+//            teacherActualMap.style = "height: 100px; width: 500px;";
+//        teacherMapBox.appendChild(teacherActualMap);//append the map
 
 }
 
-
-
-
 function closeTeacherInfo() {
-            let popup = document.getElementById("popup_id");
+if(document.getElementById("map") !== null) {
+mapChild = document.getElementById("map");
+            mapChild.parentNode.removeChild(mapChild);
+}
+let popup = document.getElementById("popup_id");
             popup.style.visibility = "hidden";
-        }
+}
 
 function closeAddTeacherPopup() {
 let popup = document.getElementById("add_teacher_popup");
@@ -997,24 +993,27 @@ createFavList(processed_user_array);
 
 //LAB 5: libs
 
-//map stuff
-//map = L.map('map').setView([51.505, -0.09], 13);
-//L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-//    maxZoom: 19,
-//    attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-//}).addTo(map);
-
+//map
 mapIsOpen = false;
 function openMapPopup(latitude, longitude) {
 console.log(latitude + "; " +  longitude);
-console.log("OK MAP WORKS!");
-let popup = document.getElementById('map');
+console.log("OK MAP START!");
 
+if(document.getElementById("map") !== null) {
+mapChild = document.getElementById("map");
+mapChild.parentNode.removeChild(mapChild);
+}
+
+mapChild = document.createElement("div");
+mapChild.id = "map";
+mapChild.style = "height: 100px; width: 700px;";
+document.getElementById("map_wrapper").appendChild(mapChild);
+
+let popup = document.getElementById('map');
 var osmUrl = 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
                                 osmAttribution = 'Map data © <a href="http://openstreetmap.org">OpenStreetMap</a> contributors,' +
                                     ' <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>',
                 osmLayer = new L.TileLayer(osmUrl, {maxZoom: 18, attribution: osmAttribution});
-                document.getElementById("map_wrapper").innerHTML = "<div id='map'></div>";
                 map = new L.Map('map');
                 map.setView(new L.LatLng(latitude, longitude), 9 );
                 map.addLayer(osmLayer);
@@ -1025,6 +1024,10 @@ if(!mapIsOpen) {//if it's hidden
     mapIsOpen = true;
     } else {//if it's visible
     popup.style.visibility = "hidden";
+
+    mapChild = document.getElementById("map");
+    mapChild.parentNode.removeChild(mapChild);
+
      mapIsOpen = false;
     }
 }
