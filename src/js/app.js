@@ -496,6 +496,7 @@ let popup = document.getElementById("add_teacher_popup");
     popup.style.visibility = "visible";
 }
 
+
 function fillPopupContent(teacher_id){
 //put data that's actually supposed to be there
 const popupInnards = processed_user_array.filter(user => user.id === teacher_id)[0];
@@ -541,6 +542,7 @@ const popupInnards = processed_user_array.filter(user => user.id === teacher_id)
              teacherInfoDesc.innerText = popupInnards.note;
             teacherInfoAbout.appendChild(teacherInfoDesc);
 
+
   const teacherInfoImageBox = document.getElementById("teacher_image");
     teacherInfoImageBox.innerHTML = "";
      let teacherInfoImg = document.createElement("img");
@@ -552,10 +554,31 @@ const popupInnards = processed_user_array.filter(user => user.id === teacher_id)
                  console.log(teacherInfoImg.src);
                 teacherInfoImageBox.appendChild(teacherInfoImg);
 
-//    alert(teacher_id);
-//    console.log(teacherInfoName);
-//   console.log(popupInnards);
+
+   //let's create the map popup
+   //<p id="teacher_map_text" onclick="openMapPopup(this.id)">Toggle map</p>
+//<div class="map_div" id="map"></div>
+    const teacherMapBox = document.getElementById("map_wrapper");
+    teacherMapBox.innerHTML = "";
+
+         teacherMapToggler = document.createElement("p");
+            teacherMapToggler.id = "teacher_map_text";
+        teacherMapToggler.innerText = "Toggle map";
+        teacherMapToggler.style = "text-decoration: underline";
+        teacherMapToggler.addEventListener("click", function() {openMapPopup(popupInnards.coordinates.latitude, popupInnards.coordinates.longitude)});
+
+         teacherMapBox.appendChild(teacherMapToggler);//append the toggler
+
+        teacherActualMap = document.createElement("div");
+            teacherActualMap.id = 'map';
+            teacherActualMap.style = "height: 100px; width: 500px;";
+        teacherMapBox.appendChild(teacherActualMap);//append the map
+
+
 }
+
+
+
 
 function closeTeacherInfo() {
             let popup = document.getElementById("popup_id");
@@ -975,25 +998,32 @@ createFavList(processed_user_array);
 //LAB 5: libs
 
 //map stuff
-map = L.map('map').setView([51.505, -0.09], 13);
-L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    maxZoom: 19,
-    attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-}).addTo(map);
+//map = L.map('map').setView([51.505, -0.09], 13);
+//L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+//    maxZoom: 19,
+//    attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+//}).addTo(map);
 
 mapIsOpen = false;
-function openMapPopup(this_teacher_id) {
-teacherToMap = processed_user_array.filter(user => user.id === this_teacher_id)[0];
+function openMapPopup(latitude, longitude) {
+console.log(latitude + "; " +  longitude);
+console.log("OK MAP WORKS!");
+let popup = document.getElementById('map');
 
-//map = L.map('map').setView([teacherToMap.coordinates.latitude, teacherToMap.coordinates.longitude], 13);
+var osmUrl = 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+                                osmAttribution = 'Map data © <a href="http://openstreetmap.org">OpenStreetMap</a> contributors,' +
+                                    ' <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>',
+                osmLayer = new L.TileLayer(osmUrl, {maxZoom: 18, attribution: osmAttribution});
+                document.getElementById("map_wrapper").innerHTML = "<div id='map'></div>";
+                map = new L.Map('map');
+                map.setView(new L.LatLng(latitude, longitude), 9 );
+                map.addLayer(osmLayer);
 
 
-//console.log("OK MAP WORKS!");
-let popup = document.getElementById("map_popup_wrapper");
-if(!mapIsOpen) {
+if(!mapIsOpen) {//if it's hidden
     popup.style.visibility = "visible";
     mapIsOpen = true;
-    } else {
+    } else {//if it's visible
     popup.style.visibility = "hidden";
      mapIsOpen = false;
     }
