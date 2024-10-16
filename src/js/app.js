@@ -15,6 +15,9 @@ favorites_array = [];
 
 result_arr = [];
 
+rowsPerPage = 10;
+    currentPage = 1;
+    ascendingOrderRequired = true;
 
 //TASK1: Reformat data from random-user-mock.js into needed format
 function format_data(random, additional) {
@@ -615,9 +618,7 @@ if(!is_fav) {
 }
 
 //stats table stuff
-    rowsPerPage = 10;
-    currentPage = 1;
-    ascendingOrderRequired = true;
+
     //////SORTING STATISTICS
     function sortStats(parameter) {
     clearTable();
@@ -747,8 +748,11 @@ console.log("tickphoto:" + tickPhoto);
 
 //console.log(parameter_filter(processed_user_array, optionRegion, ageMin, ageMax, optionSex, tickFav, tickPhoto));
 cleanUpTeachers();
-loadUpTeachers(parameter_filter(processed_user_array, optionRegion, ageMin, ageMax, optionSex, tickFav, tickPhoto));
-
+changedTeacherArr = parameter_filter(processed_user_array, optionRegion, ageMin, ageMax, optionSex, tickFav, tickPhoto);
+loadUpTeachers(changedTeacherArr);
+//console.log(currentPage);
+populateTable(changedTeacherArr, currentPage);
+//console.log("Populated the table!");
 //console.log(calculate_statistics(user_array, field + "%"));
 }
 
@@ -898,25 +902,7 @@ console.log('length: ' + acquired_users_array.length);
 console.log(acquired_users_array);
 
 //put users into the page
-//const dataElement = document.querySelector('.searched-teacher-list');
 loadUpTeachers(acquired_users_array);
-//acquired_users_array.map(user => {
-//dataElement.insertAdjacentHTML('afterbegin', `
-//
-//        <div class="teacher-item" id=${user.id} onclick="openTeacherInfo(this.id)">
-//            <div class="image-box">
-//                <img class="teacher-image" src=${user.picture_thumbnail}>
-//                <span class="teacher-initials">I.T</span>
-//            </div>
-//            <div class="teacher-item-info">
-//                <p class="teacher-name">${user.full_name}</p>
-//                <p class="teacher-spec">${user.course}</p>
-//                <p class="teacher-region">${user.country}</p>
-//            </div>
-//        </div>
-//`)
-//})
-
 populateTable(acquired_users_array, currentPage);
 createFavList(acquired_users_array);
 });
@@ -948,13 +934,14 @@ arr.map(user => {
 }
 
 const list = document.getElementById('teacher_favs_list');
+
 const prev = document.getElementById('fav-left-btn');
 prev.addEventListener('click', () => {
-    list.scrollLeft -= (100)
+    list.scrollLeft -= (120)
 });
 const next = document.getElementById('fav-right-btn');
 next.addEventListener('click', () => {
-    list.scrollLeft += (100)
+    list.scrollLeft += (120)
 });
 
 
@@ -1004,10 +991,12 @@ mapChild = document.getElementById("map");
 mapChild.parentNode.removeChild(mapChild);
 }
 
+
 mapChild = document.createElement("div");
 mapChild.id = "map";
 mapChild.style = "height: 100px; width: 700px;";
 document.getElementById("map_wrapper").appendChild(mapChild);
+
 
 let popup = document.getElementById('map');
 var osmUrl = 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
@@ -1015,7 +1004,7 @@ var osmUrl = 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
                                     ' <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>',
                 osmLayer = new L.TileLayer(osmUrl, {maxZoom: 18, attribution: osmAttribution});
                 map = new L.Map('map');
-                map.setView(new L.LatLng(latitude, longitude), 9 );
+                map.setView(new L.LatLng(latitude, longitude), 9);
                 map.addLayer(osmLayer);
 
 
@@ -1031,3 +1020,27 @@ if(!mapIsOpen) {//if it's hidden
      mapIsOpen = false;
     }
 }
+
+//chart.js
+
+//maybe like. put it into populateTable and put the data in there..?
+ const ctx = document.getElementById('myChart');
+
+  new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels: ['Name', 'Specialty', 'Age', 'Gender', 'Nationality'],
+      datasets: [{
+        label: '# of Teachers',
+        data: [12, 19, 3, 5, 2],
+        borderWidth: 1
+      }]
+    },
+    options: {
+      scales: {
+        y: {
+          beginAtZero: true
+        }
+      }
+    }
+  });

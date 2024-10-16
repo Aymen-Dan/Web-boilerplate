@@ -292,7 +292,7 @@ tbody tr th:first-child, tbody tr td:first-child {
 
 .teacher-carousel {
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
   scroll-behaviour: smooth;
   overflow: hidden;
   scroll-snap-type: x mandatory;

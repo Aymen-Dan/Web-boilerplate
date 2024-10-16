@@ -440,7 +440,7 @@ thead {
 .teacher-carousel {
 //border: 1px solid #000;
 display: flex;
-justify-content: center;
+justify-content: space-between;
 scroll-behaviour: smooth;
 overflow: hidden;
 scroll-snap-type: x mandatory;
