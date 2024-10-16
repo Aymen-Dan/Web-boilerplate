@@ -98,6 +98,7 @@ padding: $block_padding_ver 0 calc($block_padding_ver / 2) 0;
 }
 
 .content-block {
+//border: 1px solid red;
   padding: $block_padding_ver $block_padding_hor calc($block_padding_ver/2) $block_padding_hor;
 }
 
@@ -484,4 +485,22 @@ padding-bottom: 0;
 text-align: left;
 margin-top: 1%;
 font-size: $default_font_size;
+}
+
+
+.stats_charts_block {
+//border: 1px solid #000;
+display: flex;
+justify-content: space-around;
+margin-left: -38px;
+height: 350px;
+width: 1340px;
+}
+
+.piechart {
+position: static;
+border: 1px solid #000;
+margin: 5px;
+width: 20%;
+height: 100%;
 }

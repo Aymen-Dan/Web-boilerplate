@@ -382,14 +382,17 @@ const filtered_users = user_array.filter(user =>
 user.full_name === field
 || user.note === field
 || user.age == field
-|| user.id === field);
+|| user.id === field
+|| user.country === field
+|| user.course === field
+|| user.gender === field);
 
 //console.log("filtered_users");
 //console.log(filtered_users);
 
 if(filtered_users.length == 0) {
 console.log('No users found');
-return null;
+return 0;
 }
 return filtered_users;
 }
@@ -397,8 +400,11 @@ return filtered_users;
 
 //TASK 6: statistics
 function calculate_statistics(user_array, field){
-
 let temp = find_user(user_array, field);
+//console.log(temp.length);
+//if(temp.length == 0) {
+//return "0"
+//}
 let percentage = Math.round(((temp.length / user_array.length) * 100) * 100) / 100;
 
 return percentage;
@@ -451,7 +457,25 @@ function cleanUpTeachers(){
 
 //clean stats table
 function clearTable(){
-    document.getElementById("table_body_id").innerHTML = "";
+    //document.getElementById("table_body_id").innerHTML = "";
+    let specChartStatus = Chart.getChart("specialty_chart"); // <canvas> id
+        if (specChartStatus != undefined) {
+          specChartStatus.destroy();
+        }
+    let ageChartStatus = Chart.getChart("age_chart"); // <canvas> id
+        if (ageChartStatus != undefined) {
+          ageChartStatus.destroy();
+        }
+
+    let sexChartStatus = Chart.getChart("gender_chart"); // <canvas> id
+        if (sexChartStatus != undefined) {
+          sexChartStatus.destroy();
+        }
+
+    let countryChartStatus = Chart.getChart("nationality_chart"); // <canvas> id
+        if (countryChartStatus != undefined) {
+          countryChartStatus.destroy();
+        }
 }
 
 //used in searchForTeacher()
@@ -639,37 +663,227 @@ if(!is_fav) {
 
 
 function populateTable(array_of_users, page) {
-      let table = document.getElementById("table_body_id");
 
-      const startIndex = (page - 1) * rowsPerPage;
-      //console.log(startIndex);
-      const endIndex = startIndex + rowsPerPage;
-       //console.log(endIndex);
-      const slicedData = array_of_users.slice(startIndex, endIndex);
-      //console.log(slicedData);
+spec_labels_list = ['Mathematics', 'Physics', 'English', 'Computer Science', 'Dancing', 'Chess', 'Biology', 'Chemistry',
+                      'Law', 'Art', 'Medicine', 'Statistics'];
+country_labels_list = [	'Australia', 'Canada', 'Denmark', 'Finland', 'France', 'Germany', 'Iran', 'Ireland', 'Netherlands',
+'New Zeland', 'Norway', 'Spain', 'Switzerland', 'Turkey', 'Ukraine', 'United States'];
 
-      table.innerHTML = "";
-  slicedData.forEach(user => {
+age_labels_list = ['18-31', '32-45', '46-59', '60-73', '74-87', '88-99'];
+users_1831 = array_of_users.filter(user => (user.age >= 18 && user.age <= 31));
+users_3245 = array_of_users.filter(user => (user.age >= 32 && user.age <= 45));
+users_4659 = array_of_users.filter(user => (user.age >= 46 && user.age <= 59));
+users_6073 = array_of_users.filter(user => (user.age >= 60 && user.age <= 73));
+users_7487 = array_of_users.filter(user => (user.age >= 74 && user.age <= 87));
+users_8899 = array_of_users.filter(user => (user.age >= 88 && user.age <= 99));
 
-       let row = table.insertRow(-1);
+//array_of_users.forEach(user => { });
+//ok so i get an array of teachers with a specialty and then the percentage size of that array to the array_of_users and that's what i translate to the pie
+//1. arr of Math teachers:
 
-// Create table cells
-      let name = row.insertCell(0);
-      let speciality = row.insertCell(1);
-      let age = row.insertCell(2);
-      let gender = row.insertCell(3);
-      let nationality = row.insertCell(4);
+       //CHART. maybe like. put it into populateTable and put the data in there..?
+        ctxSpec = document.getElementById('specialty_chart');
+         new Chart(ctxSpec, {
+           type: 'pie',
+           data: {
+             labels: spec_labels_list,
+             datasets: [{
+               label: '% of Teachers in Specialty',
+               data: [calculate_statistics(array_of_users, 'Mathematics'),
+               calculate_statistics(array_of_users, 'Physics'),
+               calculate_statistics(array_of_users, 'English'),
+               calculate_statistics(array_of_users, 'Computer Science'),
+               calculate_statistics(array_of_users, 'Dancing'),
+               calculate_statistics(array_of_users, 'Chess'),
+               calculate_statistics(array_of_users, 'Biology'),
+               calculate_statistics(array_of_users, 'Chemistry'),
+               calculate_statistics(array_of_users, 'Law'),
+               calculate_statistics(array_of_users, 'Art'),
+               calculate_statistics(array_of_users, 'Medicine'),
+               calculate_statistics(array_of_users, 'Statistics')],
+               borderWidth: 1,
+               backgroundColor: [
+                                  '#B91372',
+                                  '#413620',
+                                  '#357DED',
+                                  '#09BC8A',
+                                  '#875C74',
+                                  '#D1FAFF',
+                                  '#56667A',
+                                  '#EFD3D7',
+                                  '#FFFD82',
+                                  '#F6AA28',
+                                  '#BB342F',
+                                  '#CC5A71'
+                                ],
+             }],
+
+           },
+           options: {
+             scales: {
+               y: {
+                 beginAtZero: true
+               }
+
+             }
+           }
+         });
 
 
-      // Add data to cells
-            name.innerText = user.full_name;
-            speciality.innerText = user.course;
-            age.innerText = user.age;
-            gender.innerText = user.gender;
-            nationality.innerText = user.country;
-});
+         ctxAge = document.getElementById('age_chart');
+                  new Chart(ctxAge, {
+                    type: 'pie',
+                    data: {
+                      labels: age_labels_list,
+                      datasets: [{
+                        label: '% of Teachers of Age',
+                        data: [
+                        Math.round(((users_1831.length / user_array.length) * 100) * 100) / 100,
+                        Math.round(((users_3245.length / user_array.length) * 100) * 100) / 100,
+                        Math.round(((users_4659.length / user_array.length) * 100) * 100) / 100,
+                        Math.round(((users_6073.length / user_array.length) * 100) * 100) / 100,
+                        Math.round(((users_7487.length / user_array.length) * 100) * 100) / 100,
+                        Math.round(((users_8899.length / user_array.length) * 100) * 100) / 100
+                        ],
+                        borderWidth: 1,
+                        backgroundColor: [
+                                           '#56667A',
+                                           '#EFD3D7',
+                                           '#FFFD82',
+                                           '#CC5A71',
+                                           '#875C74',
+                                           '#D1FAFF'
+                                         ],
+                      }],
 
-       updatePagination(array_of_users, page);
+                    },
+                    options: {
+                      scales: {
+                        y: {
+                          beginAtZero: true
+                        }
+                      }
+                    }
+                  });
+
+
+             ctxGender = document.getElementById('gender_chart');
+                              new Chart(ctxGender, {
+                                type: 'pie',
+                                data: {
+                                  labels: ['male', 'female'],
+                                  datasets: [{
+                                    label: '% of Teachers of Gender',
+                                    data: [calculate_statistics(array_of_users, 'male'),
+                                    calculate_statistics(array_of_users, 'female')
+                                    ],
+                                    borderWidth: 1,
+                                    backgroundColor: [
+                                                       '#B91372',
+                                                       '#413620'
+                                                      ],
+                                  }],
+
+                                },
+                                options: {
+                                  scales: {
+                                    y: {
+                                      beginAtZero: true
+                                    }
+                                  }
+                                }
+                              });
+
+
+ ctxNat = document.getElementById('nationality_chart');
+         new Chart(ctxNat, {
+           type: 'pie',
+           data: {
+             labels: country_labels_list,
+             datasets: [{
+               label: '% of Teachers in Specialty',
+               data: [calculate_statistics(array_of_users, 'Australia'),
+               calculate_statistics(array_of_users, 'Canada'),
+               calculate_statistics(array_of_users, 'Denmark'),
+               calculate_statistics(array_of_users, 'Finland'),
+               calculate_statistics(array_of_users, 'France'),
+               calculate_statistics(array_of_users, 'Germany'),
+               calculate_statistics(array_of_users, 'Iran'),
+               calculate_statistics(array_of_users, 'Ireland'),
+               calculate_statistics(array_of_users, 'Netherlands'),
+               calculate_statistics(array_of_users, 'New Zeland'),
+               calculate_statistics(array_of_users, 'Norway'),
+               calculate_statistics(array_of_users, 'Spain'),
+               calculate_statistics(array_of_users, 'Switzerland'),
+               calculate_statistics(array_of_users, 'Turkey'),
+               calculate_statistics(array_of_users, 'Ukraine'),
+               calculate_statistics(array_of_users, 'United States')
+
+               ],
+               borderWidth: 1,
+               backgroundColor: [
+                                  '#B91372',
+                                  '#413620',
+                                  '#357DED',
+                                  '#BB254B',
+                                  '#875C74',
+                                  '#D1FAFF',
+                                  '#56667A',
+                                  '#EFD3D7',
+                                  '#FFFD82',
+                                  '#F6AA28',
+                                  '#E6ADEC',
+                                  '#CC5A71',
+                                  '#06D6A0',
+                                  '#E9ECF5',
+                                  '#5E548E',
+                                  '#76B041'
+                                ],
+             }],
+
+           },
+           options: {
+             scales: {
+               y: {
+                 beginAtZero: true
+               }
+             }
+           }
+         });
+
+
+       //table
+//      let table = document.getElementById("table_body_id");
+//
+//      const startIndex = (page - 1) * rowsPerPage;
+//      //console.log(startIndex);
+//      const endIndex = startIndex + rowsPerPage;
+//       //console.log(endIndex);
+//      const slicedData = array_of_users.slice(startIndex, endIndex);
+//      //console.log(slicedData);
+//
+//
+//  table.innerHTML = "";
+//  slicedData.forEach(user => {
+//
+//       let row = table.insertRow(-1);
+//
+////Create table cells
+//      let name = row.insertCell(0);
+//      let speciality = row.insertCell(1);
+//      let age = row.insertCell(2);
+//      let gender = row.insertCell(3);
+//      let nationality = row.insertCell(4);
+//
+//      //Add data to cells
+//            name.innerText = user.full_name;
+//            speciality.innerText = user.course;
+//            age.innerText = user.age;
+//            gender.innerText = user.gender;
+//            nationality.innerText = user.country;
+//});
+//
+//       updatePagination(array_of_users, page);
 }
 
 function updatePagination(array_of_users, currentPage) {
@@ -711,6 +925,8 @@ function searchForTeacher() {
      cleanUpTeachers();
      loadUpTeachers(found_users);
      //console.log(calculate_statistics(found_users, search_parameter) + "%");
+     clearTable();
+     populateTable(found_users, currentPage);
 //});
 }
 
@@ -751,6 +967,7 @@ cleanUpTeachers();
 changedTeacherArr = parameter_filter(processed_user_array, optionRegion, ageMin, ageMax, optionSex, tickFav, tickPhoto);
 loadUpTeachers(changedTeacherArr);
 //console.log(currentPage);
+clearTable();
 populateTable(changedTeacherArr, currentPage);
 //console.log("Populated the table!");
 //console.log(calculate_statistics(user_array, field + "%"));
@@ -1023,24 +1240,25 @@ if(!mapIsOpen) {//if it's hidden
 
 //chart.js
 
-//maybe like. put it into populateTable and put the data in there..?
- const ctx = document.getElementById('myChart');
-
-  new Chart(ctx, {
-    type: 'doughnut',
-    data: {
-      labels: ['Name', 'Specialty', 'Age', 'Gender', 'Nationality'],
-      datasets: [{
-        label: '# of Teachers',
-        data: [12, 19, 3, 5, 2],
-        borderWidth: 1
-      }]
-    },
-    options: {
-      scales: {
-        y: {
-          beginAtZero: true
-        }
-      }
-    }
-  });
+//function populatePieChart() {
+////maybe like. put it into populateTable and put the data in there..?
+// const ctx = document.getElementById('specialty_chart');
+//  new Chart(ctx, {
+//    type: 'pie',
+//    data: {
+//      labels: ['A', 'B', 'C', 'D'],
+//      datasets: [{
+//        label: '# of Teachers in Specialty',
+//        data: [12, 19, 3, 5, 2],
+//        borderWidth: 1
+//      }]
+//    },
+//    options: {
+//      scales: {
+//        y: {
+//          beginAtZero: true
+//        }
+//      }
+//    }
+//  });
+//  }

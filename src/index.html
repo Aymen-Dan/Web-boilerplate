@@ -73,7 +73,9 @@
                 <option value="1831">18-31</option>
                 <option value="3245">32-45</option>
                  <option value="4659">46-59</option>
-                <option value="6099">60-99</option>
+                 <option value="6073">60-73</option>
+                <option value="7487">74-87</option>
+                <option value="8899">88-99</option>
             </select>
         </span>
         <!--REGION FILTER-->
@@ -131,36 +133,38 @@
 <!--STATISTICS-->
 <div id="statistics" class="content-block">
     <div class="section-header"><h2>Statistics</h2></div>
+<!--    <div>-->
+<!--        <table class="statistics-table" id="table_id">-->
+<!--            <thead class="statistics-table-head">-->
+<!--            <tr>-->
+<!--                <th onclick="sortStats('byname')">Name-->
+<!--                    <button type="button" class="sort-arrow"><img class="button-down" src="images/dwn_arrw.png"></button>-->
+<!--                </th>-->
+<!--                <th onclick="sortStats('byspec')">Speciality-->
+<!--                    <button type="button" class="sort-arrow"><img class="button-down" src="images/dwn_arrw.png"></button>-->
+<!--                </th>-->
+<!--                <th onclick="sortStats('byage')">Age-->
+<!--                    <button type="button" class="sort-arrow"><img class="button-down" src="images/dwn_arrw.png"></button>-->
+<!--                </th>-->
+<!--                <th>Gender-->
+<!--                    <button type="button" class="sort-arrow"><img class="button-down" src="images/dwn_arrw.png"></button>-->
+<!--                </th>-->
+<!--                <th onclick="sortStats('bycountry')">Nationality-->
+<!--                    <button type="button" class="sort-arrow"><img class="button-down" src="images/dwn_arrw.png"></button>-->
+<!--                </th>-->
+<!--            </tr>-->
+<!--            </thead>-->
+<!--            <tbody class="statistics-table-body" id="table_body_id"></tbody>-->
+<!--        </table>-->
+<!--        <div class="table-navigation" id="stats_nav"></div>-->
 
-    <div>
-        <table class="statistics-table" id="table_id">
-            <thead class="statistics-table-head">
-            <tr>
-                <th onclick="sortStats('byname')">Name
-                    <button type="button" class="sort-arrow"><img class="button-down" src="images/dwn_arrw.png"></button>
-                </th>
-                <th onclick="sortStats('byspec')">Speciality
-                    <button type="button" class="sort-arrow"><img class="button-down" src="images/dwn_arrw.png"></button>
-                </th>
-                <th onclick="sortStats('byage')">Age
-                    <button type="button" class="sort-arrow"><img class="button-down" src="images/dwn_arrw.png"></button>
-                </th>
-                <th>Gender
-                    <button type="button" class="sort-arrow"><img class="button-down" src="images/dwn_arrw.png"></button>
-                </th>
-                <th onclick="sortStats('bycountry')">Nationality
-                    <button type="button" class="sort-arrow"><img class="button-down" src="images/dwn_arrw.png"></button>
-                </th>
-            </tr>
-            </thead>
-            <tbody class="statistics-table-body" id="table_body_id"></tbody>
-        </table>
-        <div class="table-navigation" id="stats_nav"></div>
+<!--    </div>-->
 
-    </div>
-
-    <div>
-        <canvas id="myChart"></canvas>
+    <div class="stats_charts_block">
+        <canvas class="piechart" id="specialty_chart"></canvas>
+        <canvas class="piechart" id="age_chart"></canvas>
+        <canvas class="piechart" id="gender_chart"></canvas>
+        <canvas class="piechart" id="nationality_chart"></canvas>
     </div>
 </div>
 
