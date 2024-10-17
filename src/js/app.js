@@ -15,6 +15,9 @@ favorites_array = [];
 
 result_arr = [];
 
+rowsPerPage = 10;
+    currentPage = 1;
+    ascendingOrderRequired = true;
 
 //TASK1: Reformat data from random-user-mock.js into needed format
 function format_data(random, additional) {
@@ -267,34 +270,65 @@ function isValidEmail(email) {
 //TASK 3: Filter objects by 4 parameters (&&)
 function parameter_filter(user_array, country, min_age, max_age, gender, favorite, withPhoto) {
 filtered_users = [];
-if(favorite && withPhoto) {
-console.log("fav is true; photo is true");
-   filtered_users = user_array.filter(user => user.country === country
-      && (user.age >= min_age && user.age <= max_age)
-      && user.gender === gender
-      && user.favorite
-      && user.picture_thumbnail !== "");
-} else if (favorite && !withPhoto) {
-console.log("fav is true; photo is false");
-      filtered_users = user_array.filter(user => user.country === country
-      && (user.age >= min_age && user.age <= max_age)
-      && user.gender === gender
-      && user.favorite);
-} else if (!favorite && withPhoto) {
-console.log("fav is false; photo is true" );
-      filtered_users = user_array.filter(user => user.country === country
-      && (user.age >= min_age && user.age <= max_age)
-      && user.gender === gender
-      && user.picture_thumbnail !== "");
-} else {
-console.log("fav is false; withPhoto is false");
-      filtered_users = user_array.filter(user => user.country === country
+final_filtered_users = [];
+//all are "Any"
+if(country === "any" && min_age === "any" && max_age === "any" && gender === "any") {
+filtered_users = user_array;
+}
+
+//in case SOME are "Any"
+//if AGE and GENDER are SPECIFIED
+if(country === "any" && min_age !== "any" && max_age !== "any" && gender !== "any") {
+filtered_users = user_array.filter(user => (user.age >= min_age && user.age <= max_age) && user.gender === gender);
+}
+//if COUNTRY and GENDER are specified
+if(country !== "any" && min_age === "any" && max_age === "any" && gender !== "any") {
+filtered_users = user_array.filter(user => user.country === country && user.gender === gender);
+}
+//if COUNTRY and AGE are SPECIFIED
+if(country !== "any" && min_age !== "any" && max_age !== "any" && gender === "any") {
+filtered_users = user_array.filter(user => user.country === country && (user.age >= min_age && user.age <= max_age));
+}
+
+//if AGE ONLY SPECIFIED
+if(country === "any" && min_age !== "any" && max_age !== "any" && gender === "any") {
+filtered_users = user_array.filter(user => (user.age >= min_age && user.age <= max_age));
+}
+//if COUNTRY ONLY SPECIFIED
+if(country !== "any" && min_age === "any" && max_age === "any" && gender === "any") {
+filtered_users = user_array.filter(user => user.country === country);
+}
+//if GENDER ONLY SPECIFIED
+if(country === "any" && min_age === "any" && max_age === "any" && gender !== "any") {
+filtered_users = user_array.filter(user => user.gender === gender);
+}
+
+
+//get the filtered users list by proper options (NONE are ANY)
+if(country !== "any" && min_age !== "any" && max_age !== "any" && gender !== "any") {
+filtered_users = user_array.filter(user => user.country === country
       && (user.age >= min_age && user.age <= max_age)
       && user.gender === gender);
+      }
 
-}
+//ticks filtering
+	  if(favorite && withPhoto) {
+	  console.log("fav is true; photo is true");
+	  final_filtered_users = filtered_users.filter(user => user.favorite && user.picture_thumbnail !== "");
+	  } else if (favorite && !withPhoto) {
+	  console.log("fav is true; photo is false");
+	  final_filtered_users = filtered_users.filter(user => user.favorite);
+	  } else if (!favorite && withPhoto) {
+	  console.log("fav is false; photo is true");
+	  final_filtered_users = filtered_users.filter(user => user.picture_thumbnail !== "");
+	  } else {//so, not ONLY fas && NOT ONLY with pic
+	  console.log("fav is false; photo is false");
+	  final_filtered_users = filtered_users;
+	  }
+
+
 //console.log(filtered_users);
-return filtered_users;
+return final_filtered_users;
 }
 
 
@@ -348,14 +382,17 @@ const filtered_users = user_array.filter(user =>
 user.full_name === field
 || user.note === field
 || user.age == field
-|| user.id === field);
+|| user.id === field
+|| user.country === field
+|| user.course === field
+|| user.gender === field);
 
 //console.log("filtered_users");
 //console.log(filtered_users);
 
 if(filtered_users.length == 0) {
 console.log('No users found');
-return null;
+return 0;
 }
 return filtered_users;
 }
@@ -363,8 +400,11 @@ return filtered_users;
 
 //TASK 6: statistics
 function calculate_statistics(user_array, field){
-
 let temp = find_user(user_array, field);
+//console.log(temp.length);
+//if(temp.length == 0) {
+//return "0"
+//}
 let percentage = Math.round(((temp.length / user_array.length) * 100) * 100) / 100;
 
 return percentage;
@@ -417,7 +457,25 @@ function cleanUpTeachers(){
 
 //clean stats table
 function clearTable(){
-    document.getElementById("table_body_id").innerHTML = "";
+    //document.getElementById("table_body_id").innerHTML = "";
+    let specChartStatus = Chart.getChart("specialty_chart"); // <canvas> id
+        if (specChartStatus != undefined) {
+          specChartStatus.destroy();
+        }
+    let ageChartStatus = Chart.getChart("age_chart"); // <canvas> id
+        if (ageChartStatus != undefined) {
+          ageChartStatus.destroy();
+        }
+
+    let sexChartStatus = Chart.getChart("gender_chart"); // <canvas> id
+        if (sexChartStatus != undefined) {
+          sexChartStatus.destroy();
+        }
+
+    let countryChartStatus = Chart.getChart("nationality_chart"); // <canvas> id
+        if (countryChartStatus != undefined) {
+          countryChartStatus.destroy();
+        }
 }
 
 //used in searchForTeacher()
@@ -443,8 +501,10 @@ dataElement.insertAdjacentHTML('afterbegin', `
         </div>
 `)
 })
-
 }
+
+
+
 
 //this function should also write info into info popup (by id)
 function openTeacherInfo(teacher_id) {
@@ -455,11 +515,14 @@ function openTeacherInfo(teacher_id) {
 //    pop_img.style.visibility = "visible";
     //call to fill with proper content
     fillPopupContent(teacher_id);
-    }
+}
+
+
 function openAddTeacherPopup(){
 let popup = document.getElementById("add_teacher_popup");
     popup.style.visibility = "visible";
 }
+
 
 function fillPopupContent(teacher_id){
 //put data that's actually supposed to be there
@@ -506,6 +569,7 @@ const popupInnards = processed_user_array.filter(user => user.id === teacher_id)
              teacherInfoDesc.innerText = popupInnards.note;
             teacherInfoAbout.appendChild(teacherInfoDesc);
 
+
   const teacherInfoImageBox = document.getElementById("teacher_image");
     teacherInfoImageBox.innerHTML = "";
      let teacherInfoImg = document.createElement("img");
@@ -517,47 +581,68 @@ const popupInnards = processed_user_array.filter(user => user.id === teacher_id)
                  console.log(teacherInfoImg.src);
                 teacherInfoImageBox.appendChild(teacherInfoImg);
 
-//    alert(teacher_id);
-//    console.log(teacherInfoName);
-//   console.log(popupInnards);
+    const teacherMapBox = document.getElementById("map_wrapper");
+    teacherMapBox.innerHTML = "";
+
+         teacherMapToggler = document.createElement("p");
+            teacherMapToggler.id = "teacher_map_text";
+        teacherMapToggler.innerText = "Toggle map";
+        teacherMapToggler.style = "text-decoration: underline";
+        teacherMapToggler.addEventListener("click", function() {openMapPopup(popupInnards.coordinates.latitude, popupInnards.coordinates.longitude)});
+
+         teacherMapBox.appendChild(teacherMapToggler);//append the toggler
+
+//        teacherActualMap = document.createElement("div");
+//            teacherActualMap.id = 'map';
+//            teacherActualMap.style = "height: 100px; width: 500px;";
+//        teacherMapBox.appendChild(teacherActualMap);//append the map
+
 }
 
 function closeTeacherInfo() {
-            let popup = document.getElementById("popup_id");
+if(document.getElementById("map") !== null) {
+mapChild = document.getElementById("map");
+            mapChild.parentNode.removeChild(mapChild);
+}
+let popup = document.getElementById("popup_id");
             popup.style.visibility = "hidden";
-        }
+}
 
 function closeAddTeacherPopup() {
 let popup = document.getElementById("add_teacher_popup");
             popup.style.visibility = "hidden";
 }
 
-is_fav = false;
-function toggleFavorite() {
+
+function toggleFavorite(fav_id) {
 let favImg = document.getElementById("teacher_favorite_star");
+let thisTeacher = processed_user_array.filter(user => user.id === fav_id);
+
+console.log(thisTeacher);
+
+is_fav = thisTeacher.favorite;
+
+//console.log(is_fav);
 
 if(!is_fav) {
      favImg.src =
      "./images/star_filled.png"
      is_fav = true;
-     favorites_array.push('fav!');//adding to favs
+     //favorites_array.push('fav!');//adding to favs
+      console.log("fav: " + is_fav);
      }
-    else {
+     else {
      favImg.src ="./images/star.png"
      is_fav = false;
-     favorites_array.pop('fav!');//removing from favs
+     //favorites_array.pop('fav!');//removing from favs
+     console.log("fav: " + is_fav);
      }
 
-     console.log('Favs: ' + favorites_array);
+
 }
 
-
-
-
 //stats table stuff
-    rowsPerPage = 10;
-    currentPage = 1;
-    ascendingOrderRequired = true;
+
     //////SORTING STATISTICS
     function sortStats(parameter) {
     clearTable();
@@ -578,37 +663,227 @@ if(!is_fav) {
 
 
 function populateTable(array_of_users, page) {
-      let table = document.getElementById("table_body_id");
 
-      const startIndex = (page - 1) * rowsPerPage;
-      //console.log(startIndex);
-      const endIndex = startIndex + rowsPerPage;
-       //console.log(endIndex);
-      const slicedData = array_of_users.slice(startIndex, endIndex);
-      //console.log(slicedData);
+spec_labels_list = ['Mathematics', 'Physics', 'English', 'Computer Science', 'Dancing', 'Chess', 'Biology', 'Chemistry',
+                      'Law', 'Art', 'Medicine', 'Statistics'];
+country_labels_list = [	'Australia', 'Canada', 'Denmark', 'Finland', 'France', 'Germany', 'Iran', 'Ireland', 'Netherlands',
+'New Zeland', 'Norway', 'Spain', 'Switzerland', 'Turkey', 'Ukraine', 'United States'];
 
-      table.innerHTML = "";
-  slicedData.forEach(user => {
+age_labels_list = ['18-31', '32-45', '46-59', '60-73', '74-87', '88-99'];
+users_1831 = array_of_users.filter(user => (user.age >= 18 && user.age <= 31));
+users_3245 = array_of_users.filter(user => (user.age >= 32 && user.age <= 45));
+users_4659 = array_of_users.filter(user => (user.age >= 46 && user.age <= 59));
+users_6073 = array_of_users.filter(user => (user.age >= 60 && user.age <= 73));
+users_7487 = array_of_users.filter(user => (user.age >= 74 && user.age <= 87));
+users_8899 = array_of_users.filter(user => (user.age >= 88 && user.age <= 99));
 
-       let row = table.insertRow(-1);
+//array_of_users.forEach(user => { });
+//ok so i get an array of teachers with a specialty and then the percentage size of that array to the array_of_users and that's what i translate to the pie
+//1. arr of Math teachers:
 
-// Create table cells
-      let name = row.insertCell(0);
-      let speciality = row.insertCell(1);
-      let age = row.insertCell(2);
-      let gender = row.insertCell(3);
-      let nationality = row.insertCell(4);
+       //CHART. maybe like. put it into populateTable and put the data in there..?
+        ctxSpec = document.getElementById('specialty_chart');
+         new Chart(ctxSpec, {
+           type: 'pie',
+           data: {
+             labels: spec_labels_list,
+             datasets: [{
+               label: '% of Teachers in Specialty',
+               data: [calculate_statistics(array_of_users, 'Mathematics'),
+               calculate_statistics(array_of_users, 'Physics'),
+               calculate_statistics(array_of_users, 'English'),
+               calculate_statistics(array_of_users, 'Computer Science'),
+               calculate_statistics(array_of_users, 'Dancing'),
+               calculate_statistics(array_of_users, 'Chess'),
+               calculate_statistics(array_of_users, 'Biology'),
+               calculate_statistics(array_of_users, 'Chemistry'),
+               calculate_statistics(array_of_users, 'Law'),
+               calculate_statistics(array_of_users, 'Art'),
+               calculate_statistics(array_of_users, 'Medicine'),
+               calculate_statistics(array_of_users, 'Statistics')],
+               borderWidth: 1,
+               backgroundColor: [
+                                  '#B91372',
+                                  '#413620',
+                                  '#357DED',
+                                  '#09BC8A',
+                                  '#875C74',
+                                  '#D1FAFF',
+                                  '#56667A',
+                                  '#EFD3D7',
+                                  '#FFFD82',
+                                  '#F6AA28',
+                                  '#BB342F',
+                                  '#CC5A71'
+                                ],
+             }],
+
+           },
+           options: {
+             scales: {
+               y: {
+                 beginAtZero: true
+               }
+
+             }
+           }
+         });
 
 
-      // Add data to cells
-            name.innerText = user.full_name;
-            speciality.innerText = user.course;
-            age.innerText = user.age;
-            gender.innerText = user.gender;
-            nationality.innerText = user.country;
-});
+         ctxAge = document.getElementById('age_chart');
+                  new Chart(ctxAge, {
+                    type: 'pie',
+                    data: {
+                      labels: age_labels_list,
+                      datasets: [{
+                        label: '% of Teachers of Age',
+                        data: [
+                        Math.round(((users_1831.length / user_array.length) * 100) * 100) / 100,
+                        Math.round(((users_3245.length / user_array.length) * 100) * 100) / 100,
+                        Math.round(((users_4659.length / user_array.length) * 100) * 100) / 100,
+                        Math.round(((users_6073.length / user_array.length) * 100) * 100) / 100,
+                        Math.round(((users_7487.length / user_array.length) * 100) * 100) / 100,
+                        Math.round(((users_8899.length / user_array.length) * 100) * 100) / 100
+                        ],
+                        borderWidth: 1,
+                        backgroundColor: [
+                                           '#56667A',
+                                           '#EFD3D7',
+                                           '#FFFD82',
+                                           '#CC5A71',
+                                           '#875C74',
+                                           '#D1FAFF'
+                                         ],
+                      }],
 
-       updatePagination(array_of_users, page);
+                    },
+                    options: {
+                      scales: {
+                        y: {
+                          beginAtZero: true
+                        }
+                      }
+                    }
+                  });
+
+
+             ctxGender = document.getElementById('gender_chart');
+                              new Chart(ctxGender, {
+                                type: 'pie',
+                                data: {
+                                  labels: ['male', 'female'],
+                                  datasets: [{
+                                    label: '% of Teachers of Gender',
+                                    data: [calculate_statistics(array_of_users, 'male'),
+                                    calculate_statistics(array_of_users, 'female')
+                                    ],
+                                    borderWidth: 1,
+                                    backgroundColor: [
+                                                       '#B91372',
+                                                       '#413620'
+                                                      ],
+                                  }],
+
+                                },
+                                options: {
+                                  scales: {
+                                    y: {
+                                      beginAtZero: true
+                                    }
+                                  }
+                                }
+                              });
+
+
+ ctxNat = document.getElementById('nationality_chart');
+         new Chart(ctxNat, {
+           type: 'pie',
+           data: {
+             labels: country_labels_list,
+             datasets: [{
+               label: '% of Teachers in Specialty',
+               data: [calculate_statistics(array_of_users, 'Australia'),
+               calculate_statistics(array_of_users, 'Canada'),
+               calculate_statistics(array_of_users, 'Denmark'),
+               calculate_statistics(array_of_users, 'Finland'),
+               calculate_statistics(array_of_users, 'France'),
+               calculate_statistics(array_of_users, 'Germany'),
+               calculate_statistics(array_of_users, 'Iran'),
+               calculate_statistics(array_of_users, 'Ireland'),
+               calculate_statistics(array_of_users, 'Netherlands'),
+               calculate_statistics(array_of_users, 'New Zeland'),
+               calculate_statistics(array_of_users, 'Norway'),
+               calculate_statistics(array_of_users, 'Spain'),
+               calculate_statistics(array_of_users, 'Switzerland'),
+               calculate_statistics(array_of_users, 'Turkey'),
+               calculate_statistics(array_of_users, 'Ukraine'),
+               calculate_statistics(array_of_users, 'United States')
+
+               ],
+               borderWidth: 1,
+               backgroundColor: [
+                                  '#B91372',
+                                  '#413620',
+                                  '#357DED',
+                                  '#BB254B',
+                                  '#875C74',
+                                  '#D1FAFF',
+                                  '#56667A',
+                                  '#EFD3D7',
+                                  '#FFFD82',
+                                  '#F6AA28',
+                                  '#E6ADEC',
+                                  '#CC5A71',
+                                  '#06D6A0',
+                                  '#E9ECF5',
+                                  '#5E548E',
+                                  '#76B041'
+                                ],
+             }],
+
+           },
+           options: {
+             scales: {
+               y: {
+                 beginAtZero: true
+               }
+             }
+           }
+         });
+
+
+       //table
+//      let table = document.getElementById("table_body_id");
+//
+//      const startIndex = (page - 1) * rowsPerPage;
+//      //console.log(startIndex);
+//      const endIndex = startIndex + rowsPerPage;
+//       //console.log(endIndex);
+//      const slicedData = array_of_users.slice(startIndex, endIndex);
+//      //console.log(slicedData);
+//
+//
+//  table.innerHTML = "";
+//  slicedData.forEach(user => {
+//
+//       let row = table.insertRow(-1);
+//
+////Create table cells
+//      let name = row.insertCell(0);
+//      let speciality = row.insertCell(1);
+//      let age = row.insertCell(2);
+//      let gender = row.insertCell(3);
+//      let nationality = row.insertCell(4);
+//
+//      //Add data to cells
+//            name.innerText = user.full_name;
+//            speciality.innerText = user.course;
+//            age.innerText = user.age;
+//            gender.innerText = user.gender;
+//            nationality.innerText = user.country;
+//});
+//
+//       updatePagination(array_of_users, page);
 }
 
 function updatePagination(array_of_users, currentPage) {
@@ -650,6 +925,8 @@ function searchForTeacher() {
      cleanUpTeachers();
      loadUpTeachers(found_users);
      //console.log(calculate_statistics(found_users, search_parameter) + "%");
+     clearTable();
+     populateTable(found_users, currentPage);
 //});
 }
 
@@ -661,10 +938,17 @@ console.log(optionRegion);
 
 ageControl = document.getElementById("age_control");
 optionAge = ageControl.options[ageControl.selectedIndex].value;
-const ageMin = optionAge.slice(0, 2);
+ageMin = optionAge.slice(0, 2);
 console.log(ageMin);
-const ageMax = optionAge.slice(2, 4);
+ageMax = optionAge.slice(2, 4);
 console.log(ageMax);
+
+if(optionAge === "any") {
+ageMin = "any";
+ageMax = "any";
+console.log(ageMin);
+console.log(ageMax);
+}
 
 sexControl = document.getElementById("sex_control");
 optionSex = sexControl.options[sexControl.selectedIndex].value;
@@ -680,9 +964,13 @@ console.log("tickphoto:" + tickPhoto);
 
 //console.log(parameter_filter(processed_user_array, optionRegion, ageMin, ageMax, optionSex, tickFav, tickPhoto));
 cleanUpTeachers();
-loadUpTeachers(parameter_filter(processed_user_array, optionRegion, ageMin, ageMax, optionSex, tickFav, tickPhoto));
-
-console.log(calculate_statistics(user_array, field + "%"));
+changedTeacherArr = parameter_filter(processed_user_array, optionRegion, ageMin, ageMax, optionSex, tickFav, tickPhoto);
+loadUpTeachers(changedTeacherArr);
+//console.log(currentPage);
+clearTable();
+populateTable(changedTeacherArr, currentPage);
+//console.log("Populated the table!");
+//console.log(calculate_statistics(user_array, field + "%"));
 }
 
 function sexChange(sex) {
@@ -793,8 +1081,6 @@ populateTable(processed_user_array, currentPage);
 
 }
 
-
-
 function calculateAge(birthday) { // birthday is a date
     var ageDifMs = Date.now() - birthday.getTime();
     var ageDate = new Date(ageDifMs); // miliseconds from epoch
@@ -833,26 +1119,46 @@ console.log('length: ' + acquired_users_array.length);
 console.log(acquired_users_array);
 
 //put users into the page
-const dataElement = document.querySelector('.searched-teacher-list');
-acquired_users_array.map(user => {
-dataElement.insertAdjacentHTML('afterbegin', `
+loadUpTeachers(acquired_users_array);
+populateTable(acquired_users_array, currentPage);
+createFavList(acquired_users_array);
+});
 
-        <div class="teacher-item" id=${user.id} onclick="openTeacherInfo(this.id)">
-            <div class="image-box">
-                <img class="teacher-image" src=${user.picture_thumbnail}>
-                <span class="teacher-initials">I.T</span>
-            </div>
+
+//add a function that filters the existing teachers arr to only keep those that have favorite: true;
+function createFavList(arr){
+favorites_array = arr.filter(function(el) { return el.favorite === true; });
+console.log(favorites_array);
+loadUpFavs(favorites_array);
+}
+
+//fill up favs list
+function loadUpFavs(arr) {
+
+const dataElement = document.querySelector('.teacher-carousel');
+arr.map(user => {
+    dataElement.insertAdjacentHTML('afterbegin', `
+<div class="teacher-item" id=${user.id} onclick="openTeacherInfo(this.id)">
+            <img class="teacher-image" src=${user.picture_thumbnail}>
+            <span class="teacher-initials">I.T</span>
             <div class="teacher-item-info">
                 <p class="teacher-name">${user.full_name}</p>
-                <p class="teacher-spec">${user.course}</p>
                 <p class="teacher-region">${user.country}</p>
             </div>
         </div>
-`)
-})
+  `)
+  })
+}
 
-populateTable(acquired_users_array, currentPage);
+const list = document.getElementById('teacher_favs_list');
 
+const prev = document.getElementById('fav-left-btn');
+prev.addEventListener('click', () => {
+    list.scrollLeft -= (120)
+});
+const next = document.getElementById('fav-right-btn');
+next.addEventListener('click', () => {
+    list.scrollLeft += (120)
 });
 
 
@@ -885,6 +1191,74 @@ dataElement.insertAdjacentHTML('afterbegin', `
 })
 
 populateTable(processed_user_array, currentPage);
-
+createFavList(processed_user_array);
 });
 }
+
+//LAB 5: libs
+
+//map
+mapIsOpen = false;
+function openMapPopup(latitude, longitude) {
+console.log(latitude + "; " +  longitude);
+console.log("OK MAP START!");
+
+if(document.getElementById("map") !== null) {
+mapChild = document.getElementById("map");
+mapChild.parentNode.removeChild(mapChild);
+}
+
+
+mapChild = document.createElement("div");
+mapChild.id = "map";
+mapChild.style = "height: 100px; width: 700px;";
+document.getElementById("map_wrapper").appendChild(mapChild);
+
+
+let popup = document.getElementById('map');
+var osmUrl = 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+                                osmAttribution = 'Map data © <a href="http://openstreetmap.org">OpenStreetMap</a> contributors,' +
+                                    ' <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>',
+                osmLayer = new L.TileLayer(osmUrl, {maxZoom: 18, attribution: osmAttribution});
+                map = new L.Map('map');
+                map.setView(new L.LatLng(latitude, longitude), 9);
+                map.addLayer(osmLayer);
+
+
+if(!mapIsOpen) {//if it's hidden
+    popup.style.visibility = "visible";
+    mapIsOpen = true;
+    } else {//if it's visible
+    popup.style.visibility = "hidden";
+
+    mapChild = document.getElementById("map");
+    mapChild.parentNode.removeChild(mapChild);
+
+     mapIsOpen = false;
+    }
+}
+
+//chart.js
+
+//function populatePieChart() {
+////maybe like. put it into populateTable and put the data in there..?
+// const ctx = document.getElementById('specialty_chart');
+//  new Chart(ctx, {
+//    type: 'pie',
+//    data: {
+//      labels: ['A', 'B', 'C', 'D'],
+//      datasets: [{
+//        label: '# of Teachers in Specialty',
+//        data: [12, 19, 3, 5, 2],
+//        borderWidth: 1
+//      }]
+//    },
+//    options: {
+//      scales: {
+//        y: {
+//          beginAtZero: true
+//        }
+//      }
+//    }
+//  });
+//  }

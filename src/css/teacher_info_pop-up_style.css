@@ -124,4 +124,15 @@ body {
   text-align: left;
 }
 
+#map {
+  border: 1px solid #000;
+  height: 50px;
+  width: 50px;
+  visibility: hidden;
+}
+
+.teacher_map {
+  text-decoration: underline;
+}
+
 /*# sourceMappingURL=teacher_info_pop-up_style.css.map */

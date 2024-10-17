@@ -137,6 +137,7 @@ header div, footer div {
   display: grid;
   justify-content: center;
   margin: 0 20px 0 20px;
+  scroll-snap-align: center;
 }
 .teacher-item p {
   margin: 2px;
@@ -276,7 +277,7 @@ tbody tr th:first-child, tbody tr td:first-child {
   position: relative; /* Make this container the reference for the absolute positioning */
 }
 
-.arrow-btn {
+#fav-right-btn, #fav-left-btn {
   border: none;
   background: none;
   height: fit-content;
@@ -285,13 +286,16 @@ tbody tr th:first-child, tbody tr td:first-child {
   position: absolute; /* Make the buttons positioned absolutely */
   top: 55%; /* Align vertically at the center */
 }
-.arrow-btn:hover {
+#fav-right-btn:hover, #fav-left-btn:hover {
   opacity: 100%;
 }
 
-.teacher-favorite-list {
+.teacher-carousel {
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
+  scroll-behaviour: smooth;
+  overflow: hidden;
+  scroll-snap-type: x mandatory;
 }
 
 #fav-right-btn, #fav-left-btn {
@@ -321,6 +325,22 @@ tbody tr th:first-child, tbody tr td:first-child {
   text-align: left;
   margin-top: 1%;
   font-size: 10pt;
+}
+
+.stats_charts_block {
+  display: flex;
+  justify-content: space-around;
+  margin-left: -38px;
+  height: 350px;
+  width: 1340px;
+}
+
+.piechart {
+  position: static;
+  border: 1px solid #000;
+  margin: 5px;
+  width: 20%;
+  height: 100%;
 }
 
 /*# sourceMappingURL=style.css.map */

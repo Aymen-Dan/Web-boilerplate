@@ -16,6 +16,17 @@
     <link rel="stylesheet" href="./css/teacher_info_pop-up_style.css">
     <link rel="stylesheet" href="./css/add_teacher_pop-up_style.css">
 
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+          integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+          crossorigin=""/>
+
+    <!-- Make sure you put this AFTER Leaflet's CSS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+            integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+            crossorigin=""></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 
 </head>
 
@@ -58,16 +69,20 @@
         <span class="filter-control">
             <label for="age_control">Age</label>
             <select name="filter-age" id="age_control" onchange="filterByOptions()">
+                <option value="any">Any</option>
                 <option value="1831">18-31</option>
                 <option value="3245">32-45</option>
                  <option value="4659">46-59</option>
-                <option value="6099">60-99</option>
+                 <option value="6073">60-73</option>
+                <option value="7487">74-87</option>
+                <option value="8899">88-99</option>
             </select>
         </span>
         <!--REGION FILTER-->
         <span class="filter-control">
             <label for="region_control">Region</label>
             <select name="filter-region" id="region_control" onchange="filterByOptions()">
+                <option value="any">Any</option>
                <option value="Australia">Australia</option>
                <option value="Canada">Canada</option>
                <option value="Denmark">Denmark</option>
@@ -90,6 +105,7 @@
         <span class="filter-control">
                <label for="sex_control">Sex</label>
                <select name="filter-sex" id="sex_control" onchange="filterByOptions()">
+                   <option value="any">Any</option>
                   <option value="female">Female</option>
                   <option value="male">Male</option>
                </select>
@@ -117,32 +133,38 @@
 <!--STATISTICS-->
 <div id="statistics" class="content-block">
     <div class="section-header"><h2>Statistics</h2></div>
+<!--    <div>-->
+<!--        <table class="statistics-table" id="table_id">-->
+<!--            <thead class="statistics-table-head">-->
+<!--            <tr>-->
+<!--                <th onclick="sortStats('byname')">Name-->
+<!--                    <button type="button" class="sort-arrow"><img class="button-down" src="images/dwn_arrw.png"></button>-->
+<!--                </th>-->
+<!--                <th onclick="sortStats('byspec')">Speciality-->
+<!--                    <button type="button" class="sort-arrow"><img class="button-down" src="images/dwn_arrw.png"></button>-->
+<!--                </th>-->
+<!--                <th onclick="sortStats('byage')">Age-->
+<!--                    <button type="button" class="sort-arrow"><img class="button-down" src="images/dwn_arrw.png"></button>-->
+<!--                </th>-->
+<!--                <th>Gender-->
+<!--                    <button type="button" class="sort-arrow"><img class="button-down" src="images/dwn_arrw.png"></button>-->
+<!--                </th>-->
+<!--                <th onclick="sortStats('bycountry')">Nationality-->
+<!--                    <button type="button" class="sort-arrow"><img class="button-down" src="images/dwn_arrw.png"></button>-->
+<!--                </th>-->
+<!--            </tr>-->
+<!--            </thead>-->
+<!--            <tbody class="statistics-table-body" id="table_body_id"></tbody>-->
+<!--        </table>-->
+<!--        <div class="table-navigation" id="stats_nav"></div>-->
 
-    <div>
-        <table class="statistics-table" id="table_id">
-            <thead class="statistics-table-head">
-            <tr>
-                <th onclick="sortStats('byname')">Name
-                    <button type="button" class="sort-arrow"><img class="button-down" src="images/dwn_arrw.png"></button>
-                </th>
-                <th onclick="sortStats('byspec')">Speciality
-                    <button type="button" class="sort-arrow"><img class="button-down" src="images/dwn_arrw.png"></button>
-                </th>
-                <th onclick="sortStats('byage')">Age
-                    <button type="button" class="sort-arrow"><img class="button-down" src="images/dwn_arrw.png"></button>
-                </th>
-                <th>Gender
-                    <button type="button" class="sort-arrow"><img class="button-down" src="images/dwn_arrw.png"></button>
-                </th>
-                <th onclick="sortStats('bycountry')">Nationality
-                    <button type="button" class="sort-arrow"><img class="button-down" src="images/dwn_arrw.png"></button>
-                </th>
-            </tr>
-            </thead>
-            <tbody class="statistics-table-body" id="table_body_id"></tbody>
-        </table>
-        <div class="table-navigation" id="stats_nav"></div>
+<!--    </div>-->
 
+    <div class="stats_charts_block">
+        <canvas class="piechart" id="specialty_chart"></canvas>
+        <canvas class="piechart" id="age_chart"></canvas>
+        <canvas class="piechart" id="gender_chart"></canvas>
+        <canvas class="piechart" id="nationality_chart"></canvas>
     </div>
 </div>
 
@@ -151,65 +173,13 @@
     <div class="section-header"><h2>Favorites</h2></div>
 
 
-    <button class="arrow-btn" id="fav-left-btn"><img class="favorite-left" src="images/lft_arrw.png"
+    <button class="arrow-btn-prev" id="fav-left-btn"><img class="favorite-left" src="images/lft_arrw.png"
                                                      alt="left_buttonpng" border="0">
     </button>
-    <div class="teacher-favorite-list">
-        <!--EXAMPLE TEACHERS IN FAVS LIST-->
-        <!--TEACH1-->
-        <div class="teacher-item" id="fav_teacher_1">
-            <img class="teacher-image" src="images/dog.jpg">
-            <span class="teacher-initials">I.T</span>
-            <div class="teacher-item-info">
-                <p class="teacher-name">Ihor<br>Tkachuk</p>
-                <p class="teacher-region">Ukraine</p>
-            </div>
-        </div>
 
-        <!--TEACH2-->
-        <div class="teacher-item" id="fav_teacher_2">
-            <div class="teacher-image-container">
-                <img class="teacher-image" src="images/dog.jpg">
-                <span class="teacher-initials">A.M</span>
-            </div>
-            <div class="teacher-item-info">
-                <p class="teacher-name">Anna<br>Markevich</p>
-                <p class="teacher-region">Belarus</p>
-            </div>
-        </div>
+    <div class="teacher-carousel" id="teacher_favs_list"></div>
 
-        <!--TEACH3-->
-        <div class="teacher-item" id="fav_teacher_3">
-            <img class="teacher-image" src="images/dog.jpg">
-            <span class="teacher-initials">I.T</span>
-            <div class="teacher-item-info">
-                <p class="teacher-name">Ihor<br>Tkachuk</p>
-                <p class="teacher-region">Ukraine</p>
-            </div>
-        </div>
-
-        <!--TEACH4-->
-        <div class="teacher-item" id="fav_teacher_4">
-            <img class="teacher-image" src="images/dog.jpg">
-            <span class="teacher-initials">I.T</span>
-            <div class="teacher-item-info">
-                <p class="teacher-name">Ihor<br>Tkachuk</p>
-                <p class="teacher-region">Ukraine</p>
-            </div>
-        </div>
-
-        <!--TEACH5-->
-        <div class="teacher-item" id="fav_teacher_5">
-            <img class="teacher-image" src="images/dog.jpg">
-            <span class="teacher-initials">I.T</span>
-            <div class="teacher-item-info">
-                <p class="teacher-name">Ihor<br>Tkachuk</p>
-                <p class="teacher-region">Ukraine</p>
-            </div>
-        </div>
-
-    </div>
-    <button class="arrow-btn" id="fav-right-btn"><img class="favorite-right" src="images/rght_arrw.png"
+    <button class="arrow-btn-next" id="fav-right-btn"><img class="favorite-right" src="images/rght_arrw.png"
                                                       alt="right_buttonpng" border="0">
     </button>
 </div>
@@ -263,35 +233,14 @@
                     <!--                    <img class="teacher-image-full" src="./images/dog.jpg" alt="I.T" id="teacher_image_full">-->
                 </div>
 
-                <div class="popup-item-third" id="teacher_info">
-                    <!--                    <div id="teacher_name"></div>-->
-                    <!--                    <h3 class="teacher_speciality_full">Chemistry</h3>-->
-                    <!--                    <h4 class="teacher_region_full">Kyiv, Ukraine</h4>-->
-                    <!--                    <h4 class="teacher_age_gender_full">35, Male</h4>-->
-                    <!--                    <div class="teacher_email_full">-->
-                    <!--                        <address id="email_address"><a href="mailto:ihor_tkachuk@domain.com">ihor_tkachuk@domain.com</a></address>-->
-                    <!--                    </div>-->
-                    <!--                    <h4 class="teacher_phone_full">-->
-                    <!--                        +380964993252-->
-                    <!--                    </h4>-->
-                </div>
-                <div class="popup-item-third" id="teacher_fav" onclick="toggleFavorite()">
+                <div class="popup-item-third" id="teacher_info"></div>
+                <div class="popup-item-third" id="teacher_fav" onclick="toggleFavorite(this.id)">
                     <img alt="Fav?" src="./images/star.png" id="teacher_favorite_star"/>
                 </div>
             </div>
 
-            <div class="popup-item-full" id="teacher_desc_box">
-                <!--                <p id="teacher_description_full">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam aliquet-->
-                <!--                    ultrices diam, ut tempus erat pellentesque eget. Fusce lobortis leo eget ante dictum varius at nec-->
-                <!--                    tortor. Donec laoreet, ipsum in vestibulum fermentum, tortor quam dictum massa, in faucibus nibh-->
-                <!--                    lacus quis nisl. Praesent vitae ultricies lacus. Maecenas a lorem nec diam convallis sollicitudin-->
-                <!--                    posuere non massa. Proin at odio ac augue maximus semper. Maecenas elit metus, posuere vel egestas-->
-                <!--                    eget, efficitur quis lorem. Curabitur commodo auctor justo a lobortis. Ut et nisl ornare, varius-->
-                <!--                    magna at, tincidunt nisi. Fusce ultricies orci quis neque scelerisque venenatis.</p>-->
-            </div>
-            <div class="popup-item-full">
-                <a href="" class="teacher_map_full">Toggle map</a>
-            </div>
+            <div class="popup-item-full" id="teacher_desc_box"></div>
+            <div class="popup-item-full" id="map_wrapper"></div>
         </div>
     </div>
 </div>
