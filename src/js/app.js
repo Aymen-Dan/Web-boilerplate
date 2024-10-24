@@ -638,21 +638,22 @@ let popup = document.getElementById("add_teacher_popup");
 function toggleFavorite(fav_id) {
 let favImg = document.getElementById("teacher_favorite_star");
 let thisTeacher = processed_user_array.filter(user => user.id === fav_id);
-//console.log(thisTeacher);
-//console.log(is_fav);
-console.log("fav pre: " + thisTeacher.favorite);
-if(!thisTeacher.favorite) {
+console.log(thisTeacher[0].favorite);
+console.log("fav src pre: " + favImg.src);
+if(!thisTeacher[0].favorite) {
      favImg.src =
      "./images/star_filled.png"
-     thisTeacher.favorite = true;
-     //favorites_array.push('fav!');//adding to favs
-      console.log("fav: " + thisTeacher.favorite);
+     thisTeacher[0].favorite = true;
+     console.log("fav: " + thisTeacher[0].favorite);
+     console.log("fav src: filled");
      } else {
      favImg.src ="./images/star.png"
-     thisTeacher.favorite = false;
-     //favorites_array.pop('fav!');//removing from favs
-     console.log("fav: " + thisTeacher.favorite);
+     thisTeacher[0].favorite = false;
+     console.log("fav: " + thisTeacher[0].favorite);
+     console.log("fav src: empty");
      }
+
+     createFavList(processed_user_array);
 
 }
 
@@ -901,26 +902,26 @@ users_8899 = array_of_users.filter(user => (user.age >= 88 && user.age <= 99));
 //       updatePagination(array_of_users, page);
 }
 
-function updatePagination(array_of_users, currentPage) {
-            const pageCount = Math.ceil(array_of_users.length / rowsPerPage);
-            const paginationContainer = document.getElementById("stats_nav");
-            paginationContainer.innerHTML = "";
-
-            for (let i = 1; i <= pageCount; i++) {
-            const pageButton = document.createElement("button");
-            pageButton.type = "button";
-            pageButton.innerText = i;
-            pageButton.onclick = function () {
-                  populateTable(processed_user_array, i);
-             };
-             if (i === currentPage) {
-                  pageButton.style.fontWeight = "bold";
-             }
-             paginationContainer.appendChild(pageButton);
-             paginationContainer.appendChild(document.createTextNode(" "));
-
-            }
-        }
+//function updatePagination(array_of_users, currentPage) {
+//            const pageCount = Math.ceil(array_of_users.length / rowsPerPage);
+//            const paginationContainer = document.getElementById("stats_nav");
+//            paginationContainer.innerHTML = "";
+//
+//            for (let i = 1; i <= pageCount; i++) {
+//            const pageButton = document.createElement("button");
+//            pageButton.type = "button";
+//            pageButton.innerText = i;
+//            pageButton.onclick = function () {
+//                  populateTable(processed_user_array, i);
+//             };
+//             if (i === currentPage) {
+//                  pageButton.style.fontWeight = "bold";
+//             }
+//             paginationContainer.appendChild(pageButton);
+//             paginationContainer.appendChild(document.createTextNode(" "));
+//
+//            }
+//        }
 
 //actually call the table population function
 //populateTable(processed_user_array, currentPage);
@@ -1149,8 +1150,10 @@ loadUpFavs(favorites_array);
 
 //fill up favs list
 function loadUpFavs(arr) {
+document.getElementById("teacher_favs_list").innerHTML = "";
 
 const dataElement = document.querySelector('.teacher-carousel');
+
 arr.map(user => {
     dataElement.insertAdjacentHTML('afterbegin', `
 <div class="teacher-item" id=${user.id} onclick="openTeacherInfo(this.id)">
