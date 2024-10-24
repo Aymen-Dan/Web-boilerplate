@@ -528,6 +528,25 @@ function fillPopupContent(teacher_id){
 //put data that's actually supposed to be there
 const popupInnards = processed_user_array.filter(user => user.id === teacher_id)[0];
 
+//<img alt="Fav?" src="./images/star.png" id="teacher_favorite_star"  onclick="toggleFavorite(this.id)"/>
+    const teacherFavStarImageContainer = document.getElementById("teacher_fav");
+    teacherFavStarImageContainer.innerHTML = "";
+
+    let teacherFavStarImage = document.createElement("img");
+    teacherFavStarImage.id = "teacher_favorite_star";
+    console.log(popupInnards.favorite);
+
+    if(popupInnards.favorite) {
+    teacherFavStarImage.src = "./images/star_filled.png";//filled star
+    } else {
+    teacherFavStarImage.src = "./images/star.png";//empty star
+    }
+    //console.log(teacherFavStarImage.src);
+    teacherFavStarImage.addEventListener("click", function() {toggleFavorite(popupInnards.id)});
+
+    teacherFavStarImageContainer.appendChild(teacherFavStarImage);
+
+
     const teacherInfoContainer = document.getElementById("teacher_info");
     teacherInfoContainer.innerHTML = "";
 
@@ -564,6 +583,7 @@ const popupInnards = processed_user_array.filter(user => user.id === teacher_id)
 
     const teacherInfoAbout = document.getElementById("teacher_desc_box");
     teacherInfoAbout.innerHTML = "";
+
         let teacherInfoDesc = document.createElement("p");
             teacherInfoDesc.id = "teacher_description_full";
              teacherInfoDesc.innerText = popupInnards.note;
@@ -572,6 +592,7 @@ const popupInnards = processed_user_array.filter(user => user.id === teacher_id)
 
   const teacherInfoImageBox = document.getElementById("teacher_image");
     teacherInfoImageBox.innerHTML = "";
+
      let teacherInfoImg = document.createElement("img");
                 teacherInfoImg.id = "teacher_image_full"
               // teacherInfoImg.class = "teacher-image-full";
@@ -617,27 +638,21 @@ let popup = document.getElementById("add_teacher_popup");
 function toggleFavorite(fav_id) {
 let favImg = document.getElementById("teacher_favorite_star");
 let thisTeacher = processed_user_array.filter(user => user.id === fav_id);
-
-console.log(thisTeacher);
-
-is_fav = thisTeacher.favorite;
-
+//console.log(thisTeacher);
 //console.log(is_fav);
-
-if(!is_fav) {
+console.log("fav pre: " + thisTeacher.favorite);
+if(!thisTeacher.favorite) {
      favImg.src =
      "./images/star_filled.png"
-     is_fav = true;
+     thisTeacher.favorite = true;
      //favorites_array.push('fav!');//adding to favs
-      console.log("fav: " + is_fav);
-     }
-     else {
+      console.log("fav: " + thisTeacher.favorite);
+     } else {
      favImg.src ="./images/star.png"
-     is_fav = false;
+     thisTeacher.favorite = false;
      //favorites_array.pop('fav!');//removing from favs
-     console.log("fav: " + is_fav);
+     console.log("fav: " + thisTeacher.favorite);
      }
-
 
 }
 
@@ -826,7 +841,7 @@ users_8899 = array_of_users.filter(user => (user.age >= 88 && user.age <= 99));
                                   '#413620',
                                   '#357DED',
                                   '#BB254B',
-                                  '#875C74',
+                                  '#6EA4BF',
                                   '#D1FAFF',
                                   '#56667A',
                                   '#EFD3D7',
