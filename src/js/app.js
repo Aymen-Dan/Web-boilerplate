@@ -528,6 +528,25 @@ function fillPopupContent(teacher_id){
 //put data that's actually supposed to be there
 const popupInnards = processed_user_array.filter(user => user.id === teacher_id)[0];
 
+//<img alt="Fav?" src="./images/star.png" id="teacher_favorite_star"  onclick="toggleFavorite(this.id)"/>
+    const teacherFavStarImageContainer = document.getElementById("teacher_fav");
+    teacherFavStarImageContainer.innerHTML = "";
+
+    let teacherFavStarImage = document.createElement("img");
+    teacherFavStarImage.id = "teacher_favorite_star";
+    console.log(popupInnards.favorite);
+
+    if(popupInnards.favorite) {
+    teacherFavStarImage.src = "./images/star_filled.png";//filled star
+    } else {
+    teacherFavStarImage.src = "./images/star.png";//empty star
+    }
+    //console.log(teacherFavStarImage.src);
+    teacherFavStarImage.addEventListener("click", function() {toggleFavorite(popupInnards.id)});
+
+    teacherFavStarImageContainer.appendChild(teacherFavStarImage);
+
+
     const teacherInfoContainer = document.getElementById("teacher_info");
     teacherInfoContainer.innerHTML = "";
 
@@ -564,6 +583,7 @@ const popupInnards = processed_user_array.filter(user => user.id === teacher_id)
 
     const teacherInfoAbout = document.getElementById("teacher_desc_box");
     teacherInfoAbout.innerHTML = "";
+
         let teacherInfoDesc = document.createElement("p");
             teacherInfoDesc.id = "teacher_description_full";
              teacherInfoDesc.innerText = popupInnards.note;
@@ -572,6 +592,7 @@ const popupInnards = processed_user_array.filter(user => user.id === teacher_id)
 
   const teacherInfoImageBox = document.getElementById("teacher_image");
     teacherInfoImageBox.innerHTML = "";
+
      let teacherInfoImg = document.createElement("img");
                 teacherInfoImg.id = "teacher_image_full"
               // teacherInfoImg.class = "teacher-image-full";
@@ -617,27 +638,22 @@ let popup = document.getElementById("add_teacher_popup");
 function toggleFavorite(fav_id) {
 let favImg = document.getElementById("teacher_favorite_star");
 let thisTeacher = processed_user_array.filter(user => user.id === fav_id);
-
-console.log(thisTeacher);
-
-is_fav = thisTeacher.favorite;
-
-//console.log(is_fav);
-
-if(!is_fav) {
+console.log(thisTeacher[0].favorite);
+console.log("fav src pre: " + favImg.src);
+if(!thisTeacher[0].favorite) {
      favImg.src =
      "./images/star_filled.png"
-     is_fav = true;
-     //favorites_array.push('fav!');//adding to favs
-      console.log("fav: " + is_fav);
-     }
-     else {
+     thisTeacher[0].favorite = true;
+     console.log("fav: " + thisTeacher[0].favorite);
+     console.log("fav src: filled");
+     } else {
      favImg.src ="./images/star.png"
-     is_fav = false;
-     //favorites_array.pop('fav!');//removing from favs
-     console.log("fav: " + is_fav);
+     thisTeacher[0].favorite = false;
+     console.log("fav: " + thisTeacher[0].favorite);
+     console.log("fav src: empty");
      }
 
+     createFavList(processed_user_array);
 
 }
 
@@ -826,7 +842,7 @@ users_8899 = array_of_users.filter(user => (user.age >= 88 && user.age <= 99));
                                   '#413620',
                                   '#357DED',
                                   '#BB254B',
-                                  '#875C74',
+                                  '#6EA4BF',
                                   '#D1FAFF',
                                   '#56667A',
                                   '#EFD3D7',
@@ -886,26 +902,26 @@ users_8899 = array_of_users.filter(user => (user.age >= 88 && user.age <= 99));
 //       updatePagination(array_of_users, page);
 }
 
-function updatePagination(array_of_users, currentPage) {
-            const pageCount = Math.ceil(array_of_users.length / rowsPerPage);
-            const paginationContainer = document.getElementById("stats_nav");
-            paginationContainer.innerHTML = "";
-
-            for (let i = 1; i <= pageCount; i++) {
-            const pageButton = document.createElement("button");
-            pageButton.type = "button";
-            pageButton.innerText = i;
-            pageButton.onclick = function () {
-                  populateTable(processed_user_array, i);
-             };
-             if (i === currentPage) {
-                  pageButton.style.fontWeight = "bold";
-             }
-             paginationContainer.appendChild(pageButton);
-             paginationContainer.appendChild(document.createTextNode(" "));
-
-            }
-        }
+//function updatePagination(array_of_users, currentPage) {
+//            const pageCount = Math.ceil(array_of_users.length / rowsPerPage);
+//            const paginationContainer = document.getElementById("stats_nav");
+//            paginationContainer.innerHTML = "";
+//
+//            for (let i = 1; i <= pageCount; i++) {
+//            const pageButton = document.createElement("button");
+//            pageButton.type = "button";
+//            pageButton.innerText = i;
+//            pageButton.onclick = function () {
+//                  populateTable(processed_user_array, i);
+//             };
+//             if (i === currentPage) {
+//                  pageButton.style.fontWeight = "bold";
+//             }
+//             paginationContainer.appendChild(pageButton);
+//             paginationContainer.appendChild(document.createTextNode(" "));
+//
+//            }
+//        }
 
 //actually call the table population function
 //populateTable(processed_user_array, currentPage);
@@ -1134,8 +1150,10 @@ loadUpFavs(favorites_array);
 
 //fill up favs list
 function loadUpFavs(arr) {
+document.getElementById("teacher_favs_list").innerHTML = "";
 
 const dataElement = document.querySelector('.teacher-carousel');
+
 arr.map(user => {
     dataElement.insertAdjacentHTML('afterbegin', `
 <div class="teacher-item" id=${user.id} onclick="openTeacherInfo(this.id)">
